@@ -15,8 +15,6 @@ public class Film {
     private String name;
     @NotBlank
     private String description;
-    @NotBlank
     private LocalDate releaseDate;
-    @NotBlank
     private int duration; //в минутах
 }
