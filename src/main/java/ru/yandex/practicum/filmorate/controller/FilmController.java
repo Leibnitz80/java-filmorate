@@ -7,8 +7,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -41,8 +43,8 @@ public class FilmController {
     }
 
     @GetMapping
-    public Collection getFilms() {
-        return films.values();
+    public List getFilms() {
+        return new ArrayList<>(films.values());
     }
 
     public void isValid(Film film) {
