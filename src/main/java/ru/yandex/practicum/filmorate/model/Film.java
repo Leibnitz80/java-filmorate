@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 public class Film {
-    private int id = 0;
+    private int id;
     @NotBlank
     private String name;
     @NotBlank

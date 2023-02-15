@@ -13,54 +13,48 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private Map<Integer, User> users = new HashMap<>();
-    private int currId = 0;
+    private final Map<Integer, User> users = new HashMap<>();
+    private int currId;
 
     @GetMapping
-    public Collection getUsers() {
-        log.info("GET");
-        return users.values();
+    public List getUsers() {
+        log.info("Запрос: GET /users");
+        return new ArrayList<>(users.values());
     }
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
-        if (!users.containsKey(user.getId())) {
-            isValid(user);
-            if (user.getId() == 0) {
-                user.setId(++currId);
-            }
-            if (user.getName() == null || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-            }
-            users.put(user.getId(),user);
-        }
+        log.info("Запрос: POST /users");
+        log.info(user.toString());
+        isValid(user);
+        user.setId(++currId);
+        users.put(user.getId(),user);
+        log.info("Запрос: POST /users обработан успешно");
         return user;
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        isValid(user);
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(),user);
-        } else {
+        log.info("Запрос: PUT /users");
+        log.info(user.toString());
+        if (!users.containsKey(user.getId())) {
+            log.info("Запрос: PUT /users обработан с ошибкой: Несуществующий объект");
             throw new ValidationException("Несуществующий объект");
         }
+        isValid(user);
+        users.put(user.getId(),user);
+        log.info("Запрос: PUT /users обработан успешно");
 
         return user;
     }
 
     public void isValid(User user) {
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            log.info("Некорректный email");
-            throw new ValidationException("Некорректный email");
-        }
-        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            log.info("Некорректный логин");
-            throw new ValidationException("Некорректный логин");
-        }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.info("День рождения не должен быть в будущем");
+            log.info("Ошибка валидации: День рождения не должен быть в будущем");
             throw new ValidationException("День рождения не должен быть в будущем");
+        }
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
     }
 }

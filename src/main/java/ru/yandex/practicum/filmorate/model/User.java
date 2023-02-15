@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 public class User {
-    private int id = 0;
+    private int id;
     @NotBlank
     @Email
     private String email;

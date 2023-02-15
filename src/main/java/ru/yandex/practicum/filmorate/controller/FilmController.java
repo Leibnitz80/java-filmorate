@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,29 +15,33 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/films")
 public class FilmController {
-    private HashMap<Integer,Film> films = new HashMap<>();
-    private int currId = 0;
+    private static final int MAX_LENGTH = 200;
+    private static final LocalDate MIN_DATE = LocalDate.of(1895,12,28);
+    private final HashMap<Integer,Film> films = new HashMap<>();
+    private int currId;
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        if (!films.containsKey(film.getId())) {
-            isValid(film);
-            if (film.getId() == 0) {
-                film.setId(++currId);
-            }
-            films.put(film.getId(),film);
-        }
+        log.info("Запрос: POST /films");
+        log.info(film.toString());
+        isValid(film);
+        film.setId(++currId);
+        films.put(film.getId(),film);
+        log.info("Запрос: POST /films обработан успешно");
         return film;
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        if (films.containsKey(film.getId())) {
-            isValid(film);
-            films.put(film.getId(),film);
-        } else {
+        log.info("Запрос: PUT /films");
+        log.info(film.toString());
+        if (!films.containsKey(film.getId())) {
+            log.info("Запрос PUT /films обработан с ошибкой: Несуществующий объект");
             throw new ValidationException("Несуществующий объект");
         }
+        isValid(film);
+        films.put(film.getId(),film);
+
         return film;
     }
 
@@ -48,20 +51,16 @@ public class FilmController {
     }
 
     public void isValid(Film film) {
-        if (film.getName().isBlank()) {
-            log.info("Название не должно быть пустым");
-            throw new ValidationException("Название не должно быть пустым");
-        }
-        if (film.getDescription().length() > 200) {
-            log.info("Описание более 200 символов");
+        if (film.getDescription().length() > MAX_LENGTH) {
+            log.info("Ошибка валидации: Описание более 200 символов");
             throw new ValidationException("Описание более 200 символов");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895,12,28))) {
-            log.info("Дата релиза не должна быть раньше 28/12/1895");
+        if (film.getReleaseDate().isBefore(MIN_DATE)) {
+            log.info("Ошибка валидации: Дата релиза не должна быть раньше 28/12/1895");
             throw new ValidationException("Дата релиза не должна быть раньше 28/12/1895");
         }
         if (film.getDuration() <= 0) {
-            log.info("Продолжительность фильма должна быть больше нуля");
+            log.info("Ошибка валидации: Продолжительность фильма должна быть больше нуля");
             throw new ValidationException("Продолжительность фильма должна быть больше нуля");
         }
     }
