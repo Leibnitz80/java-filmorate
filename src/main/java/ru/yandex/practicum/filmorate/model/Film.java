@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
-public class Film {
+public class Film implements Filmorable{
     private int id;
     @NotBlank
     private String name;
