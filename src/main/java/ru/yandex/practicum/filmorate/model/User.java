@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
-public class User implements Filmorable {
+public class User {
     private int id;
     @NotBlank
     @Email
