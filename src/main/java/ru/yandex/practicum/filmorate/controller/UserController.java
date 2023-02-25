@@ -1,36 +1,59 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
-    private int currId;
+    private final UserService userService;
+    private final UserStorage userStorage;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+        this.userStorage = userService.getUserStorage();
+    }
 
     @GetMapping
     public List getAll() {
         log.info("Запрос: GET");
-        return new ArrayList<>(users.values());
+        return userStorage.getUsers();
+    }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable("id") Long id) {
+        log.info("Запрос: GET");
+        return userStorage.getUserById(id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List getAllFriends(@PathVariable("id") Long id) {
+        log.info("Запрос: GET getFriends");
+        return userService.getAllFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List getCommonFriends(@PathVariable("id") Long id1, @PathVariable("otherId") Long id2) {
+        log.info("Запрос: GET getCommonFriends");
+        return userService.getCommonFriends(id1, id2);
     }
 
     @PostMapping
     public User add(@Valid @RequestBody User user) {
         log.info("Запрос: POST {}", user);
         isValid(user);
-        user.setId(++currId);
-        users.put(user.getId(),user);
+        userStorage.addUser(user);
         log.info("Запрос: POST обработан успешно");
         return user;
     }
@@ -38,15 +61,24 @@ public class UserController {
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.info("Запрос: PUT {}", user);
-        if (!users.containsKey(user.getId())) {
-            log.info("Запрос: PUT обработан с ошибкой: Несуществующий объект");
-            throw new ValidationException("Несуществующий объект");
-        }
         isValid(user);
-        users.put(user.getId(),user);
+        userStorage.updateUser(user);
         log.info("Запрос: PUT обработан успешно");
-
         return user;
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void makeFriends(@PathVariable("id") Long id1, @PathVariable("friendId") Long id2) {
+        log.info("Запрос: PUT makeFriends");
+        userService.makeFriends(id1, id2);
+        log.info("Запрос: PUT makeFriends обработан успешно");
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriends(@PathVariable("id") Long id1, @PathVariable("friendId") Long id2) {
+        log.info("Запрос: DELETE deleteFriends");
+        userService.deleteFriends(id1, id2);
+        log.info("Запрос: DELETE deleteFriends обработан успешно");
     }
 
     public void isValid(User user) {
