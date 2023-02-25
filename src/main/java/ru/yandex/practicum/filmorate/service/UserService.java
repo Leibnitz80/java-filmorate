@@ -50,7 +50,7 @@ public class UserService {
         ArrayList<User> result = new ArrayList<>();
         for (int i = 0; i < set1.size(); i++) {
             Long currentId = set1.get(i);
-            if (currentId.equals(id2) && set2.contains(currentId)) {
+            if (currentId != id2 && set2.contains(currentId)) {
                 result.add(userStorage.getUserById(currentId));
             }
         }
