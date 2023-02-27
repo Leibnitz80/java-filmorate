@@ -26,9 +26,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List getTopFilms(Integer count) { //эти данные логичнее забирать из хранилища
         return films.values().stream().sorted((p0, p1) -> {
             int comp;
-            if(p0.getLikes().size() > p1.getLikes().size()){
+            if(p0.getLikesCount() > p1.getLikesCount()){
                 comp = -1;
-            } else if (p0.getLikes().size() < p1.getLikes().size()) {
+            } else if (p0.getLikesCount() < p1.getLikesCount()) {
                 comp = 1;
             } else {
                 comp = 0;
@@ -40,7 +40,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilmById(Integer id) {
         if (!films.containsKey(id)) {
-            log.info("Запрос: GET обработан с ошибкой: Несуществующий объект");
             throw new NotFoundException(
                     String.format("Фильм c id= %d не найден!", id));
         }
@@ -51,7 +50,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void addFilm(Film film) {
         film.setId(++currId);
         films.put(film.getId(),film);
-        log.info("Запрос: POST обработан успешно");
     }
 
     @Override

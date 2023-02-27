@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -16,7 +15,7 @@ class UserControllerTest {
 
     @Test
     void contextLoadsUser() {
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserService userService = new UserService(new InMemoryUserStorage());
         User user = User.builder()
                 .Id(1L)
                 .email("sdfsdf@mail.ru")
@@ -25,7 +24,7 @@ class UserControllerTest {
                 .birthday(LocalDate.of(2030,1,1))
                 .build();
         Assertions.assertThrows(ValidationException.class, () -> {
-        userController.isValid(user);
+            userService.isValid(user);
         });
         User user2 = User.builder()
                 .Id(1L)
@@ -35,7 +34,7 @@ class UserControllerTest {
                 .birthday(LocalDate.of(2020,1,10))
                 .build();
         Assertions.assertThrows(ValidationException.class, () -> {
-        userController.isValid(user2);
+            userService.isValid(user2);
         });
     }
 }

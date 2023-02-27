@@ -25,6 +25,10 @@ public class Film{
         likes.add(id);
     }
 
+    public int getLikesCount(){
+        return getLikes().size();
+    }
+
     public void deleteLike(Long id) {
         likes.remove(id);
     }

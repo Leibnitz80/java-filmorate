@@ -23,12 +23,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserById(Long id) {
-        if (!users.containsKey(id)) {
-            log.info("Запрос: GET getUserById обработан с ошибкой: Несуществующий объект");
-            throw new NotFoundException(
-                    String.format("Пользователь c id= %d не найден!", id));
-        }
-        log.info("Запрос: GET getUserById обработан успешно");
+        checkUserContains(id);
         return users.get(id);
     }
 
@@ -36,26 +31,25 @@ public class InMemoryUserStorage implements UserStorage {
     public void addUser(User user) {
         user.setId(++currId);
         users.put(user.getId(),user);
-        log.info("Запрос: POST обработан успешно");
     }
 
     @Override
     public void updateUser(User user) {
-        if (!users.containsKey(user.getId())) {
-            log.info("Запрос: PUT обработан с ошибкой: Несуществующий объект");
-            throw new NotFoundException("Несуществующий объект");
-        }
+        checkUserContains(user.getId());
         users.put(user.getId(),user);
-        log.info("Запрос: PUT обработан успешно");
     }
 
     @Override
     public void deleteUser(Long id) {
+        checkUserContains(id);
+        users.remove(id);
+    }
+
+    private void checkUserContains(Long id) {
         if (!users.containsKey(id)) {
-            log.info("Запрос: DELETE deleteUser обработан с ошибкой: Несуществующий объект");
+            log.info("Валидация checkUserContains id={}", id);
             throw new NotFoundException(
                     String.format("Пользователь c id= %d не найден!", id));
         }
-        users.remove(id);
     }
 }

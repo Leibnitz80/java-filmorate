@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
@@ -17,7 +16,7 @@ class FilmControllerTest {
 
 	@Test
 	void contextLoadsFilm() {
-		FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
+		FilmService filmService = new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage());
 		Film film = Film.builder()
 				.id(1)
 				.name("Название фильма")
@@ -26,7 +25,7 @@ class FilmControllerTest {
 				.duration(20)
 				.build();
 		Assertions.assertThrows(ValidationException.class, () -> {
-			filmController.isValid(film);
+			filmService.isValid(film);
 		});
 		Film film3 = Film.builder()
 				.id(1)
@@ -36,7 +35,7 @@ class FilmControllerTest {
 				.duration(20)
 				.build();
 		Assertions.assertThrows(ValidationException.class, () -> {
-			filmController.isValid(film3);
+			filmService.isValid(film3);
 		});
 		Film film4 = Film.builder()
 				.id(1)
@@ -46,7 +45,7 @@ class FilmControllerTest {
 				.duration(0)
 				.build();
 		Assertions.assertThrows(ValidationException.class, () -> {
-			filmController.isValid(film4);
+			filmService.isValid(film4);
 		});
 	}
 }
