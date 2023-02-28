@@ -29,7 +29,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
-        log.error("Неизвестная ошибка! Код 500");
+        log.error("Неизвестная ошибка! Код 500: " + e.getMessage());
         return new ErrorResponse(
                 "Произошла непредвиденная ошибка."
         );

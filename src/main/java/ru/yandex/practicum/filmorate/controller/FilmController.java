@@ -14,6 +14,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/films")
 public class FilmController {
+    private static final String TOP_LIMIT = "10";
     private final FilmService filmService;
 
     @Autowired
@@ -34,7 +35,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List getTopFilms(@RequestParam(required = false) Integer count) {
+    public List getTopFilms(@RequestParam(defaultValue  = TOP_LIMIT) Integer count) {
         log.info("Запрос: GET getTopFilms");
         return filmService.getTopFilms(count);
     }

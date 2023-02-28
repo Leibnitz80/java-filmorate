@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -22,17 +21,22 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-    private final Set<Long> friends = new HashSet<>();
+    @JsonIgnore
+    private final HashSet<User> friends = new HashSet<>();
 
-    public void addFriend(Long id) {
-        friends.add(id);
+    public void addFriend(User friend) {
+        friends.add(friend);
     }
 
-    public void deleteFriend(Long id) {
-        friends.remove(id);
+    public void deleteFriend(User friend) {
+        friends.remove(friend);
     }
 
-    public ArrayList<Long> getAllFriends() {
-        return new ArrayList<>(getFriends());
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return this.Id == user.getId();
     }
 }

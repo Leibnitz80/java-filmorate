@@ -10,6 +10,4 @@ public interface FilmStorage {
     void updateFilm(Film film);
     void deleteFilm(Integer id);
     Film getFilmById(Integer ig);
-
-    List getTopFilms(Integer count);
 }

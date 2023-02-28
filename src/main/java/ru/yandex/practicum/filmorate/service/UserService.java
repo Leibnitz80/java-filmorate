@@ -9,8 +9,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,10 +21,6 @@ public class UserService {
     @Autowired
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
-    }
-
-    public UserStorage getUserStorage() {
-        return userStorage;
     }
 
     public User add(User user) {
@@ -41,15 +38,15 @@ public class UserService {
     public void makeFriends(Long id1, Long id2) {
         User user1 = userStorage.getUserById(id1);
         User user2 = userStorage.getUserById(id2);
-        user1.addFriend(user2.getId());
-        user2.addFriend(user1.getId());
+        user1.addFriend(user2);
+        user2.addFriend(user1);
     }
 
     public void deleteFriends(Long id1, Long id2) {
         User user1 = userStorage.getUserById(id1);
         User user2 = userStorage.getUserById(id2);
-        user1.addFriend(user2.getId());
-        user2.addFriend(user1.getId());
+        user1.deleteFriend(user2);
+        user2.deleteFriend(user1);
     }
 
     public List getAll() {
@@ -60,26 +57,18 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public List getAllFriends(Long Id) {
-        User user = userStorage.getUserById(Id);
-        List<User> friendList = new ArrayList<>();
-        for (Long friend : user.getAllFriends()) {
-            friendList.add(userStorage.getUserById(friend));
-        }
-        return friendList;
+    public Set getAllFriends(Long Id) {
+        return userStorage.getUserById(Id).getFriends();
     }
 
-    public List getCommonFriends(Long id1, Long id2) {
-        List<Long> set1 = userStorage.getUserById(id1).getAllFriends();
-        List<Long> set2 = userStorage.getUserById(id2).getAllFriends();
-        ArrayList<User> result = new ArrayList<>();
-        for (int i = 0; i < set1.size(); i++) {
-            Long currentId = set1.get(i);
-            if (!currentId.equals(id2) && set2.contains(currentId)) {
-                result.add(userStorage.getUserById(currentId));
-            }
-        }
-        return result;
+    public Set getCommonFriends(Long id1, Long id2) {
+        System.out.println("Зашли");
+        Set<User> set1 = userStorage.getUserById(id1).getFriends();
+        Set<User> set2 = userStorage.getUserById(id2).getFriends();
+        Set<User> common = set1.stream()
+                .filter(set2::contains)
+                .collect(Collectors.toSet());
+        return common;
     }
 
     public void isValid(User user) {

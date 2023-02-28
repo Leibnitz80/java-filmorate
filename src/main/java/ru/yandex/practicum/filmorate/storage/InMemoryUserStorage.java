@@ -17,7 +17,7 @@ public class InMemoryUserStorage implements UserStorage {
     private Long currId = 0L;
 
     @Override
-    public List getUsers() {
+    public List<User> getUsers() {
         return new ArrayList<>(users.values());
     }
 
@@ -45,9 +45,10 @@ public class InMemoryUserStorage implements UserStorage {
         users.remove(id);
     }
 
-    private void checkUserContains(Long id) {
+    public void checkUserContains(Long id) {
+        log.info("Валидация checkUserContains id={}", id);
         if (!users.containsKey(id)) {
-            log.info("Валидация checkUserContains id={}", id);
+            log.error(String.format("Пользователь c id= %d не найден!", id));
             throw new NotFoundException(
                     String.format("Пользователь c id= %d не найден!", id));
         }
