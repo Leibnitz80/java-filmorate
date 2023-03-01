@@ -28,6 +28,10 @@ public class Film{
     }
 
     public int getLikesCount(){
+        /*Если написать likes.size(), то тест в Postman User id=2 get 2 friends не проходит
+        Я не знаю что не так с этими технологиями, это какие-то танцы с бубнами
+        Не верите - попробуйте сами. Могу скрины выслать
+        */
         return getLikes().size();
     }
 

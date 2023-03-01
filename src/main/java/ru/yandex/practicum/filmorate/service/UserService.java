@@ -3,14 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,21 +51,20 @@ public class UserService {
         return userStorage.getUsers();
     }
 
-    public User getById(@PathVariable("id") Long id) {
+    public User getById(Long id) {
         return userStorage.getUserById(id);
     }
 
-    public Set getAllFriends(Long Id) {
+    public List<User> getAllFriends(Long Id) {
         return userStorage.getUserById(Id).getFriends();
     }
 
-    public Set getCommonFriends(Long id1, Long id2) {
-        System.out.println("Зашли");
-        Set<User> set1 = userStorage.getUserById(id1).getFriends();
-        Set<User> set2 = userStorage.getUserById(id2).getFriends();
-        Set<User> common = set1.stream()
+    public List getCommonFriends(Long id1, Long id2) {
+        List<User> list1 = userStorage.getUserById(id1).getFriends();
+        List<User> set2 = userStorage.getUserById(id2).getFriends();
+        List<User> common = list1.stream()
                 .filter(set2::contains)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
         return common;
     }
 

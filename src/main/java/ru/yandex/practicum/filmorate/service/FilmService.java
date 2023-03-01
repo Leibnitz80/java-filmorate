@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,9 @@ import java.util.stream.Collectors;
 public class FilmService {
     private static final int MAX_LENGTH = 200;
     private static final LocalDate MIN_DATE = LocalDate.of(1895,12,28);
+    private static final Comparator<Film> COMP_BY_LIKES = (p0, p1) -> {
+        return p1.getLikesCount() - p0.getLikesCount();
+    };
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
@@ -35,10 +39,10 @@ public class FilmService {
     }
 
     public List<Film> getTopFilms(Integer count) {
-        return getAll().stream().sorted((p0, p1) -> {
-            int i = p1.getLikesCount() - p0.getLikesCount();
-            return i;
-        }).limit(count).collect(Collectors.toList());
+        return getAll().stream()
+                .sorted(COMP_BY_LIKES)
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     public void add(Film film) {
@@ -63,6 +67,7 @@ public class FilmService {
         userStorage.checkUserContains(userId);
         film.deleteLike(userId);
     }
+
     public void isValid(Film film) { // используется в тестах, поэтому не может быть private
         if (film.getDescription().length() > MAX_LENGTH) {
             log.info("Ошибка валидации: Описание более 200 символов");
