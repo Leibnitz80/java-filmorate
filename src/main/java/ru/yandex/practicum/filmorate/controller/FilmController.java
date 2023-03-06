@@ -1,68 +1,72 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
 @Slf4j
 @RequestMapping("/films")
 public class FilmController {
-    private static final int MAX_LENGTH = 200;
-    private static final LocalDate MIN_DATE = LocalDate.of(1895,12,28);
-    private final Map<Integer, Film> films = new HashMap<>();
-    private int currId;
+    private static final String TOP_LIMIT = "10";
+    private final FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping
     public List getAll() {
         log.info("Запрос: GET");
-        return new ArrayList<>(films.values());
+        return filmService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public Film getById(@PathVariable("id") Integer id) {
+        log.info("Запрос: GET by id");
+        return filmService.getById(id);
+    }
+
+    @GetMapping("/popular")
+    public List getTopFilms(@RequestParam(defaultValue  = TOP_LIMIT) Integer count) {
+        log.info("Запрос: GET getTopFilms");
+        return filmService.getTopFilms(count);
     }
 
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
         log.info("Запрос: POST {}", film);
-        isValid(film);
-        film.setId(++currId);
-        films.put(film.getId(),film);
+        filmService.add(film);
         log.info("Запрос: POST обработан успешно");
         return film;
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        log.info("Запрос: PUT {}", film);
-        if (!films.containsKey(film.getId())) {
-            log.info("Запрос: PUT обработан с ошибкой: Несуществующий объект");
-            throw new ValidationException("Несуществующий объект");
-        }
-        isValid(film);
-        films.put(film.getId(),film);
-        log.info("Запрос: PUT обработан успешно");
-
+        log.info("Запрос: PUT update {}", film);
+        filmService.update(film);
+        log.info("Запрос: PUT update обработан успешно");
         return film;
     }
-    public void isValid(Film film) { // используется в тестах, поэтому не может быть private
-        if (film.getDescription().length() > MAX_LENGTH) {
-            log.info("Ошибка валидации: Описание более 200 символов");
-            throw new ValidationException("Описание более 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(MIN_DATE)) {
-            log.info("Ошибка валидации: Дата релиза не должна быть раньше 28/12/1895");
-            throw new ValidationException("Дата релиза не должна быть раньше 28/12/1895");
-        }
-        if (film.getDuration() <= 0) {
-            log.info("Ошибка валидации: Продолжительность фильма должна быть больше нуля");
-            throw new ValidationException("Продолжительность фильма должна быть больше нуля");
-        }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable("id") Integer filmId, @PathVariable("userId") Long userId) {
+        log.info("Запрос: PUT addLike");
+        filmService.addLike(filmId, userId);
+        log.info("Запрос: PUT addLike обработан успешно");
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable("id") Integer filmId, @PathVariable("userId") Long userId) {
+        log.info("Запрос: DELETE deleteLike");
+        filmService.deleteLike(filmId, userId);
+        log.info("Запрос: DELETE deleteLike обработан успешно");
     }
 }
