@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
@@ -20,19 +20,48 @@ public class Film{
     private String description;
     private LocalDate releaseDate;
     private int duration; //в минутах
+    private Mpa mpa;
+    private List<Genre> genres = new ArrayList<>();
     @JsonIgnore
-    private final Set<Long> likes = new HashSet<>();
+    private List<Long> likes = new ArrayList<>();
+
+    public Film() {
+    }
+
+    public Film(String name,String description, LocalDate releaseDate,int duration,Mpa mpa) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+    }
+
+    public Film(int id, String name,String description, LocalDate releaseDate,int duration,Mpa mpa) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+    }
+
+    public Film(int id, String name,String description, LocalDate releaseDate,int duration,Mpa mpa, List genres, List likes) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.genres = genres;
+        this.likes = likes;
+    }
 
     public void addLike(Long id) {
         likes.add(id);
     }
 
     public int getLikesCount(){
-        /*Если написать likes.size(), то тест в Postman User id=2 get 2 friends не проходит
-        Я не знаю что не так с этими технологиями, это какие-то танцы с бубнами
-        Не верите - попробуйте сами. Могу скрины выслать
-        */
-        return getLikes().size();
+        return likes.size();
     }
 
     public void deleteLike(Long id) {

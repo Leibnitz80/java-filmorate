@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,7 +22,7 @@ public class UserService {
 
     public User add(User user) {
         isValid(user);
-        userStorage.addUser(user);
+        user = userStorage.addUser(user);
         return user;
     }
 
@@ -33,18 +32,12 @@ public class UserService {
         return user;
     }
 
-    public void makeFriends(Long id1, Long id2) {
-        User user1 = userStorage.getUserById(id1);
-        User user2 = userStorage.getUserById(id2);
-        user1.addFriend(user2);
-        user2.addFriend(user1);
+    public void makeFriends(Long userId, Long friendId) {
+        userStorage.makeFriends(userId, friendId);
     }
 
-    public void deleteFriends(Long id1, Long id2) {
-        User user1 = userStorage.getUserById(id1);
-        User user2 = userStorage.getUserById(id2);
-        user1.deleteFriend(user2);
-        user2.deleteFriend(user1);
+    public void deleteFriends(Long friendId, Long userId) {
+        userStorage.deleteFriends(friendId, userId);
     }
 
     public List getAll() {
@@ -56,16 +49,11 @@ public class UserService {
     }
 
     public List<User> getAllFriends(Long Id) {
-        return userStorage.getUserById(Id).getFriends();
+        return userStorage.getAllFriends(Id);
     }
 
     public List getCommonFriends(Long id1, Long id2) {
-        List<User> list1 = userStorage.getUserById(id1).getFriends();
-        List<User> set2 = userStorage.getUserById(id2).getFriends();
-        List<User> common = list1.stream()
-                .filter(set2::contains)
-                .collect(Collectors.toList());
-        return common;
+        return userStorage.getCommonFriends(id1, id2);
     }
 
     public void isValid(User user) {
