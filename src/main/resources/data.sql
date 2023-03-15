@@ -1,3 +1,6 @@
+DELETE FROM Rating;
+DELETE FROM Genres;
+
 INSERT INTO Rating(rating_id, name)
 values(1, 'G');
 INSERT INTO Rating(rating_id, name)
