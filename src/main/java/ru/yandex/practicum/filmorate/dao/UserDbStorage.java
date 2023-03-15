@@ -86,7 +86,8 @@ public class UserDbStorage implements UserStorage {
         String sql = "select u.user_id, u.login, u.name, u.email, u.birthday " +
                      "from Friendship f" +
                      "      inner join Users u on u.user_id = f.friend_id " +
-                     "where f.user_id = ?;";
+                     "where f.user_id = ? " +
+                     "order by u.user_id;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs),Id);
     }
 
