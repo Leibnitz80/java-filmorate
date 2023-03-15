@@ -44,11 +44,11 @@ public class UserDbStorage implements UserStorage {
     public void updateUser(User user) {
         checkUserContains(user.getId());
         String sql = "update Users " +
-                "set login = ?," +
-                "    name = ?," +
-                "    email = ?," +
-                "    birthday = ?" +
-                "where user_id = ?;";
+                     "set login = ?," +
+                     "    name = ?," +
+                     "    email = ?," +
+                     "    birthday = ?" +
+                     "where user_id = ?;";
         jdbcTemplate.update(sql,user.getLogin(), user.getName(), user.getEmail(), user.getBirthday(), user.getId());
     }
 
