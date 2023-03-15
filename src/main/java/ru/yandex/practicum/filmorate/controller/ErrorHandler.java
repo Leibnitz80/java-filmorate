@@ -31,7 +31,7 @@ public class ErrorHandler {
     public ErrorResponse handleThrowable(final Throwable e) {
         log.error("Неизвестная ошибка! Код 500: " + e.getMessage());
         return new ErrorResponse(
-                "Произошла непредвиденная ошибка."
+                "Произошла непредвиденная ошибка. " + e.getMessage()
         );
     }
 }
