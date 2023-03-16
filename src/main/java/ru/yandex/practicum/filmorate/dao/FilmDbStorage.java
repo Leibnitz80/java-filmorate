@@ -29,9 +29,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilms() {
-        String sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.rating_id, r.name as mpa_name " +
+        String sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name as mpa_name " +
                 "from Films f " +
-                "    inner join Rating r on r.rating_id = f.rating_id " +
+                "    inner join Mpa r on r.mpa_id = f.mpa_id " +
                 "order by f.film_id ;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
     }
@@ -42,13 +42,13 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select count(1) as row_count from Films where name = ? and releaseDate = ?;";
         Long rowCount = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getLong("row_count"), film.getName(), film.getReleaseDate());
         if (rowCount == 0) {
-            sql = "insert into Films(name, description, releaseDate, duration, rating_id)" +
+            sql = "insert into Films(name, description, releaseDate, duration, mpa_id)" +
                   "values(?,?,?,?,?);";
             jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
         }
-        sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.rating_id, r.name as mpa_name " +
+        sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name as mpa_name " +
               "from Films f " +
-              "    inner join Rating r on r.rating_id = f.rating_id " +
+              "    inner join Mpa r on r.mpa_id = f.mpa_id " +
               "where f.name = ? and f.releaseDate = ? ;";
         film = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeFilm(rs), film.getName(), film.getReleaseDate());
         updateGenres(genresList, film.getId());
@@ -64,7 +64,7 @@ public class FilmDbStorage implements FilmStorage {
                      "    description = ?," +
                      "    releaseDate = ?," +
                      "    duration = ?," +
-                     "    rating_id = ? " +
+                     "    mpa_id = ? " +
                      "where film_id = ?;";
         jdbcTemplate.update(sql,film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
         updateGenres(film.getGenres(), film.getId());
@@ -83,9 +83,9 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film getFilmById(Integer id) {
         checkFilmContains(id);
-        String sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.rating_id, r.name as mpa_name " +
+        String sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name as mpa_name " +
                      "from Films f " +
-                     "inner join Rating r on r.rating_id = f.rating_id " +
+                     "inner join Mpa r on r.mpa_id = f.mpa_id " +
                 "where f.film_id = ?;";
         Film film = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeFilm(rs), id);
         film.setGenres(getFilmGenres(id));
@@ -151,7 +151,7 @@ public class FilmDbStorage implements FilmStorage {
         // Получаем дату и конвертируем её из sql.Date в time.LocalDate
         LocalDate releaseDate = rs.getDate("releaseDate").toLocalDate();
         Integer duration = rs.getInt("duration");
-        Mpa mpa = new Mpa(rs.getInt("rating_id"),rs.getString("mpa_name"));
+        Mpa mpa = new Mpa(rs.getInt("mpa_id"),rs.getString("mpa_name"));
 
         String sql = "select g.genre_id, g.name " +
                      "from Genres_Relation gr " +

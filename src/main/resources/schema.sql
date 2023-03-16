@@ -1,12 +1,20 @@
+DROP TABLE Films;
+DROP TABLE Mpa;
+DROP TABLE Likes;
+DROP TABLE Users;
+DROP TABLE Genres;
+DROP TABLE Genres_Relation;
+DROP TABLE Friendship;
+
 CREATE TABLE IF NOT EXISTS Films(film_id int auto_increment,
 				   name varchar(160),
 				   description varchar(255),
 				   releaseDate date,
 				   duration int,
-				   rating_id int
+				   mpa_id int
 				  );
 
-CREATE TABLE IF NOT EXISTS Rating(rating_id int auto_increment,
+CREATE TABLE IF NOT EXISTS Mpa(mpa_id int auto_increment,
 				   name varchar(160)
 				  );
 
