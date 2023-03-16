@@ -1,11 +1,3 @@
-DROP TABLE Films;
-DROP TABLE Mpa;
-DROP TABLE Likes;
-DROP TABLE Users;
-DROP TABLE Genres;
-DROP TABLE Genres_Relation;
-DROP TABLE Friendship;
-
 CREATE TABLE IF NOT EXISTS Films(film_id int auto_increment,
 				   name varchar(160),
 				   description varchar(255),
