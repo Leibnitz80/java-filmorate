@@ -23,3 +23,4 @@ from Friendship f1
       inner join Users u on u.user_id = f2.friend_id
 where f1.user_id = ? and f2.user_id = ?
 and f1.friend_id <> f2.user_id and f2.friend_id <> f1.user_id;
+
