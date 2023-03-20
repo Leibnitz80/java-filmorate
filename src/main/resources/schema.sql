@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS Films;
+DROP TABLE IF EXISTS Mpa;
+DROP TABLE IF EXISTS Likes;
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS Genres;
+DROP TABLE IF EXISTS Genres_Relation;
+DROP TABLE IF EXISTS Friendship;
+
 CREATE TABLE IF NOT EXISTS Films(film_id int auto_increment,
 				   name varchar(160),
 				   description varchar(255),
