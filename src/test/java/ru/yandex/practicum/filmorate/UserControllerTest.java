@@ -17,7 +17,7 @@ class UserControllerTest {
     void contextLoadsUser() {
         UserService userService = new UserService(new InMemoryUserStorage());
         User user = User.builder()
-                .Id(1L)
+                .id(1L)
                 .email("sdfsdf@mail.ru")
                 .login("VasyaPupkin")
                 .name("name")
@@ -27,7 +27,7 @@ class UserControllerTest {
             userService.isValid(user);
         });
         User user2 = User.builder()
-                .Id(1L)
+                .id(1L)
                 .email("sdfsdf@mail.ru")
                 .login("Vasya Pupkin")
                 .name("name")

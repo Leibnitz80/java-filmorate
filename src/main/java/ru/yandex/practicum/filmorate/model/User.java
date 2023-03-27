@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 public class User {
-    private Long Id;
+    private Long id = 0L;
     @NotBlank
     @Email
     private String email;
@@ -24,6 +24,14 @@ public class User {
     private LocalDate birthday;
     @JsonIgnore
     private final List<User> friends = new ArrayList<>();
+
+    public User(Long id, String email, String login, String name, LocalDate birthday) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+    }
 
     public void addFriend(User friend) {
         friends.add(friend);
@@ -43,6 +51,6 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return this.Id == user.getId();
+        return this.id == user.getId();
     }
 }

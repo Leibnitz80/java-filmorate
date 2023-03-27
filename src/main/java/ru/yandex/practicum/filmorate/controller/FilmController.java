@@ -43,7 +43,7 @@ public class FilmController {
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
         log.info("Запрос: POST {}", film);
-        filmService.add(film);
+        film = filmService.add(film);
         log.info("Запрос: POST обработан успешно");
         return film;
     }
@@ -51,7 +51,7 @@ public class FilmController {
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         log.info("Запрос: PUT update {}", film);
-        filmService.update(film);
+        film = filmService.update(film);
         log.info("Запрос: PUT update обработан успешно");
         return film;
     }

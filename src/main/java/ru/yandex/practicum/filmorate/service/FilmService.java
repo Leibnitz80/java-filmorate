@@ -45,30 +45,33 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    public void add(Film film) {
+    public Film add(Film film) {
         isValid(film);
-        filmStorage.addFilm(film);
+        film = filmStorage.addFilm(film);
+        return film;
     }
 
     public void addLike(Integer filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId);
         userStorage.checkUserContains(userId);
-        film.addLike(userId);
+        filmStorage.addLike(filmId, userId);
     }
 
     public Film update(Film film) {
         isValid(film);
-        filmStorage.updateFilm(film);
+        film = filmStorage.updateFilm(film);
         return film;
     }
 
     public void deleteLike(Integer filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId);
         userStorage.checkUserContains(userId);
-        film.deleteLike(userId);
+        filmStorage.deleteLike(filmId,userId);
     }
 
     public void isValid(Film film) { // используется в тестах, поэтому не может быть private
+        if (film.getName().isBlank()) {
+            log.info("Ошибка валидации: Пустое наименование фильма");
+            throw new ValidationException("Пустое наименование фильма");
+        }
         if (film.getDescription().length() > MAX_LENGTH) {
             log.info("Ошибка валидации: Описание более 200 символов");
             throw new ValidationException("Описание более 200 символов");

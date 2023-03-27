@@ -25,16 +25,18 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void addFilm(Film film) {
+    public Film addFilm(Film film) {
         film.setId(++currId);
         films.put(film.getId(),film);
+        return film;
     }
 
     @Override
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         checkFilmContains(film.getId());
         films.put(film.getId(),film);
         log.info("Запрос: PUT обработан успешно");
+        return film;
     }
 
     @Override
@@ -43,12 +45,21 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.remove(id);
     }
 
+    @Override
+    public void addLike(Integer filmId, Long userId) {
+        films.get(filmId).addLike(userId);
+    }
+
+    @Override
+    public void deleteLike(Integer filmId, Long userId) {
+        films.get(filmId).deleteLike(userId);
+    }
+
     public void checkFilmContains(Integer id) {
         if (!films.containsKey(id)) {
             log.error(String.format("Фильм c id= %d не найден!", id));
             throw new NotFoundException(
                     String.format("Фильм c id= %d не найден!", id));
         }
-
     }
 }
