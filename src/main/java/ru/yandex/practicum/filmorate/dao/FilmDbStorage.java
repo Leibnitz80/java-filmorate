@@ -133,6 +133,25 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs), film_id);
     }
 
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        String sql =
+            "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name as mpa_name, count(f.film_id) " +
+            "from Films f " +
+            "inner join Mpa r on r.mpa_id = f.mpa_id " +
+            "inner join Likes ul on ul.film_id = f.film_id and ul.user_id = ? " +
+            "inner join Likes fl on fl.film_id = f.film_id and fl.user_id = ? " +
+            "group by f.film_id " +
+            "order by count(f.film_id) asc";
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId, friendId);
+
+        sql = "select distinct gr.film_id, g.genre_id, g.name " +
+                "from Genres_Relation gr " +
+                "     inner join Genres g on g.genre_id = gr.genre_id " +
+                "order by g.genre_id";
+        jdbcTemplate.query(sql, (rx, rowNum) -> parseGenres(rx,films));
+        return films;
+    }
+
     private void updateGenres(List<Genre> genres, Integer filmId) {
         deleteGenres(filmId);
         int[] updateCounts =jdbcTemplate.batchUpdate(
