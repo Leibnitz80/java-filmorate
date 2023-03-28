@@ -21,7 +21,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,7 +56,7 @@ public class DirectorsInFilmsTest {
         film2.setDuration(42);
         film2.setMpa(new Mpa(1, "G"));
 
-        director = new Director(1,"Косяковский");
+        director = new Director(1, "Косяковский");
         ResponseEntity<Director> directorResponse =
                 restTemplate.postForEntity("/directors", director, Director.class);
 
@@ -138,7 +137,7 @@ public class DirectorsInFilmsTest {
         Film[] films = responseList.getBody();
         assertEquals(responseList.getStatusCode(), HttpStatus.OK);
 
-        Film[] filmsInRightOrder = new Film[] {newFilm1, newFilm2};
+        Film[] filmsInRightOrder = new Film[]{newFilm1, newFilm2};
 
         for (int i = 0; i < films.length; i++) {
             assertEquals(films[i].getId(), filmsInRightOrder[i].getId());
@@ -163,7 +162,7 @@ public class DirectorsInFilmsTest {
         Film[] films = responseList.getBody();
         assertEquals(responseList.getStatusCode(), HttpStatus.OK);
 
-        Film[] filmsInRightOrder = new Film[] {newFilm1, newFilm2};
+        Film[] filmsInRightOrder = new Film[]{newFilm1, newFilm2};
 
 
         for (int i = 0; i < films.length; i++) {

@@ -27,14 +27,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film addFilm(Film film) {
         film.setId(++currId);
-        films.put(film.getId(),film);
+        films.put(film.getId(), film);
         return film;
     }
 
     @Override
     public Film updateFilm(Film film) {
         checkFilmContains(film.getId());
-        films.put(film.getId(),film);
+        films.put(film.getId(), film);
         log.info("Запрос: PUT обработан успешно");
         return film;
     }

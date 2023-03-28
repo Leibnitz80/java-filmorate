@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private static final int MAX_LENGTH = 200;
-    private static final LocalDate MIN_DATE = LocalDate.of(1895,12,28);
+    private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
     private static final Comparator<Film> COMP_BY_LIKES = (p0, p1) -> {
         return p1.getLikesCount() - p0.getLikesCount();
     };
@@ -26,8 +26,7 @@ public class FilmService {
     private static final Comparator<Film> COMP_BY_LIKES_WHEN_0 = (p0, p1) -> {
         if (p1.getLikesCount() > 0 && p0.getLikesCount() > 0) {
             return p1.getLikesCount() - p0.getLikesCount();
-        }
-        else {
+        } else {
             return p0.getId() - p1.getId();
         }
     };
@@ -75,7 +74,7 @@ public class FilmService {
 
     public void deleteLike(Integer filmId, Long userId) {
         userStorage.checkUserContains(userId);
-        filmStorage.deleteLike(filmId,userId);
+        filmStorage.deleteLike(filmId, userId);
     }
 
     public List<Film> getByDirectorId(Integer id, String condition) {

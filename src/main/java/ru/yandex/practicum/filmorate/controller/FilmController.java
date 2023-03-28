@@ -36,7 +36,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List getTopFilms(@RequestParam(defaultValue  = TOP_LIMIT) Integer count) {
+    public List getTopFilms(@RequestParam(defaultValue = TOP_LIMIT) Integer count) {
         log.info("Запрос: GET getTopFilms");
         return filmService.getTopFilms(count);
     }
