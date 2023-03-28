@@ -55,6 +55,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.get(filmId).deleteLike(userId);
     }
 
+    @Override
+    public List<Film> getByDirectorId(Integer id) {
+        return null;
+    }
+
     public void checkFilmContains(Integer id) {
         if (!films.containsKey(id)) {
             log.error(String.format("Фильм c id= %d не найден!", id));
