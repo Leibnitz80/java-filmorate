@@ -103,6 +103,7 @@ public class FilmDbStorage implements FilmStorage {
                 "    mpa_id = ? " +
                 "where film_id = ?;";
         jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
+        updateDirectorsInFilm(film.getDirectors(), film.getId());
         updateGenres(film.getGenres(), film.getId());
         film = getFilmById(film.getId());
         return film;
