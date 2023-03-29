@@ -9,9 +9,8 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import javax.validation.Valid;
 import java.util.List;
 
-
-@RestController
 @Slf4j
+@RestController
 @RequestMapping("/films")
 public class FilmController {
     private static final String TOP_LIMIT = "10";

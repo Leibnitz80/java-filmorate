@@ -4,15 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Repository
 @Slf4j
@@ -115,15 +117,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
-        // используем конструктор, методы ResultSet
-        // и готовое значение user
         Long id = rs.getLong("user_id");
         String login = rs.getString("login");
         String name = rs.getString("name");
         String email = rs.getString("email");
-        // Получаем дату и конвертируем её из sql.Date в time.LocalDate
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
 
         return new User(id, email, login, name, birthday);
     }
+
 }

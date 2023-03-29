@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FilmService {
     private static final int MAX_LENGTH = 200;
     private static final LocalDate MIN_DATE = LocalDate.of(1895,12,28);
@@ -23,19 +25,17 @@ public class FilmService {
     };
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-    }
+    private final UserService userService;
 
     public List<Film> getAll() {
         return filmStorage.getFilms();
     }
 
-    public Film getById(Integer id) {
-        return filmStorage.getFilmById(id);
+    public Film getById(Integer filmId) {
+        if (filmStorage.getFilmById(filmId) == null) {
+            throw new NotFoundException("Film with id= " + filmId + " not found");
+        }
+        return filmStorage.getFilmById(filmId);
     }
 
     public List<Film> getTopFilms(Integer count) {
@@ -67,7 +67,7 @@ public class FilmService {
         filmStorage.deleteLike(filmId,userId);
     }
 
-    public void isValid(Film film) { // используется в тестах, поэтому не может быть private
+    public void isValid(Film film) {
         if (film.getName().isBlank()) {
             log.info("Ошибка валидации: Пустое наименование фильма");
             throw new ValidationException("Пустое наименование фильма");
@@ -85,4 +85,10 @@ public class FilmService {
             throw new ValidationException("Продолжительность фильма должна быть больше нуля");
         }
     }
+
+    public List<Film> getRecommendations(Long id) {
+        userService.getById(id);
+        return filmStorage.getRecommendations(id);
+    }
+
 }

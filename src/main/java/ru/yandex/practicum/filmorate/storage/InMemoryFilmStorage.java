@@ -21,7 +21,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilmById(Integer id) {
         checkFilmContains(id);
-        return films.get(id);
+        return films.getOrDefault(id, null);
     }
 
     @Override
@@ -29,6 +29,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         film.setId(++currId);
         films.put(film.getId(),film);
         return film;
+    }
+
+    @Override
+    public Film get(long id) {
+        return films.getOrDefault(id, null);
     }
 
     @Override
@@ -53,6 +58,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void deleteLike(Integer filmId, Long userId) {
         films.get(filmId).deleteLike(userId);
+    }
+
+    @Override
+    public List<Film> getRecommendations(Long userId) {
+        return null;
     }
 
     public void checkFilmContains(Integer id) {
