@@ -28,7 +28,7 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public FilmDbStorage (JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -48,15 +48,15 @@ public class FilmDbStorage implements FilmStorage {
         }
 
     private Genre parseGenres(ResultSet rs, List<Film> films) throws SQLException {
-        int film_id;
-        int genre_id;
+        int filmId;
+        int genreId;
         String name;
-        film_id = rs.getInt("film_id");
-        genre_id = rs.getInt("genre_id");
+        filmId = rs.getInt("film_id");
+        genreId = rs.getInt("genre_id");
         name = rs.getString("name");
-        Genre genre = new Genre(genre_id,name);
+        Genre genre = new Genre(genreId,name);
         for (Film film : films) {
-            if (film.getId() == film_id) {
+            if (film.getId() == filmId) {
                 film.getGenres().add(genre);
                 break;
             }
@@ -125,19 +125,38 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
-    public List<Genre> getFilmGenres(Integer film_id) {
+    public List<Genre> getFilmGenres(Integer filmId) {
         String sql = "select g.genre_id, g.name from Genres_relation gr " +
                      "               inner join genres g on g.genre_id = gr.genre_id " +
                      "where film_id = ? " +
                      "order by g.genre_id ;";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs), film_id);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs), filmId);
+    }
+
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        String sql =
+            "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name as mpa_name, count(f.film_id) " +
+            "from Films f " +
+            "inner join Mpa r on r.mpa_id = f.mpa_id " +
+            "inner join Likes ul on ul.film_id = f.film_id and ul.user_id = ? " +
+            "inner join Likes fl on fl.film_id = f.film_id and fl.user_id = ? " +
+            "group by f.film_id " +
+            "order by count(f.film_id) asc";
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId, friendId);
+
+        sql = "select distinct gr.film_id, g.genre_id, g.name " +
+                "from Genres_Relation gr " +
+                "     inner join Genres g on g.genre_id = gr.genre_id " +
+                "order by g.genre_id";
+        jdbcTemplate.query(sql, (rx, rowNum) -> parseGenres(rx,films));
+        return films;
     }
 
     private void updateGenres(List<Genre> genres, Integer filmId) {
         deleteGenres(filmId);
-        int[] updateCounts =jdbcTemplate.batchUpdate(
+        int[] updateCounts = jdbcTemplate.batchUpdate(
                 "insert into Genres_relation(film_id, genre_id) " +
-                     "select ?, ? "+
+                     "select ?, ? " +
                      "where not exists (select 1 from Genres_relation where film_id = ? and genre_id = ?)",
                 new BatchPreparedStatementSetter() {
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -150,7 +169,8 @@ public class FilmDbStorage implements FilmStorage {
                     public int getBatchSize() {
                         return genres.size();
                     }
-                } );
+                }
+        );
     }
 
     private void deleteGenres(Integer filmId) {
