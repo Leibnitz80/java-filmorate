@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FilmService {
     private static final int MAX_LENGTH = 200;
     private static final LocalDate MIN_DATE = LocalDate.of(1895,12,28);
@@ -23,12 +25,7 @@ public class FilmService {
     };
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-    }
+    private final UserService userService;
 
     public List<Film> getAll() {
         return filmStorage.getFilms();
@@ -90,5 +87,10 @@ public class FilmService {
             log.info("Ошибка валидации: Продолжительность фильма должна быть больше нуля");
             throw new ValidationException("Продолжительность фильма должна быть больше нуля");
         }
+    }
+
+    public List<Film> getRecommendations(Long id) {
+        userService.getById(id);
+        return filmStorage.getRecommendations(id);
     }
 }
