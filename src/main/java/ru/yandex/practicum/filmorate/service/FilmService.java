@@ -81,7 +81,7 @@ public class FilmService {
             result = filmStorage.getByDirectorId(id).stream()
                     .sorted(COMP_BY_YEAR)
                     .collect(Collectors.toList());
-        } else if (condition.equals("likes")){
+        } else if (condition.equals("likes")) {
             result = filmStorage.getByDirectorId(id);
         }
 
