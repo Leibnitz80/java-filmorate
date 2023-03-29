@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -21,7 +22,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilmById(Integer id) {
         checkFilmContains(id);
-        return films.getOrDefault(id, null);
+        return films.get(id);
     }
 
     @Override
@@ -29,11 +30,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         film.setId(++currId);
         films.put(film.getId(),film);
         return film;
-    }
-
-    @Override
-    public Film get(long id) {
-        return films.getOrDefault(id, null);
     }
 
     @Override
@@ -63,6 +59,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getRecommendations(Long userId) {
         return null;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        List<Film> userFilms =
+            films.values().stream().filter(f -> f.getLikes().contains(userId)).collect(Collectors.toList());
+        List<Film> friendFilms =
+            films.values().stream().filter(f -> f.getLikes().contains(friendId)).collect(Collectors.toList());
+        return userFilms.stream()
+                .filter(friendFilms::contains)
+                .collect(Collectors.toList());
     }
 
     public void checkFilmContains(Integer id) {

@@ -67,7 +67,13 @@ public class FilmService {
         filmStorage.deleteLike(filmId,userId);
     }
 
-    public void isValid(Film film) {
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        userStorage.checkUserContains(userId);
+        userStorage.checkUserContains(friendId);
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    public void isValid(Film film) { // используется в тестах, поэтому не может быть private
         if (film.getName().isBlank()) {
             log.info("Ошибка валидации: Пустое наименование фильма");
             throw new ValidationException("Пустое наименование фильма");
