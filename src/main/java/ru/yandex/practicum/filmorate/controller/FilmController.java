@@ -75,4 +75,11 @@ public class FilmController {
         filmService.deleteLike(filmId, userId);
         log.info("Запрос: DELETE deleteLike обработан успешно");
     }
+
+    @DeleteMapping("/{filmId}")
+    public void deleteFilmById(@PathVariable("filmId") Integer id) {
+        log.info("Запрос: DELETE deleteFilmById {}", id);
+        filmService.deleteFilmById(id);
+        log.info("Запрос: DELETE deleteFilmById {} обработан успешно", id);
+    }
 }

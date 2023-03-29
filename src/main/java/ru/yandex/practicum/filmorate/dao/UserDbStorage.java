@@ -57,6 +57,8 @@ public class UserDbStorage implements UserStorage {
         checkUserContains(id);
         String sql = "delete from Users where user_id = ?;";
         jdbcTemplate.update(sql,id);
+
+        deleteUserFromFriendship(id); // Удаляю все записи с user_id из friendship
     }
 
     @Override
@@ -112,6 +114,14 @@ public class UserDbStorage implements UserStorage {
             throw new NotFoundException(
                     String.format("Пользователь c id= %d не найден!", id));
         }
+    }
+
+    // Удаление всех записей, связанных с удаляемым пользователем -
+    // из таблицы friendship
+    private void deleteUserFromFriendship(Long id) {
+        String sql = "delete from Friendship where user_id = ? or friend_id = ?";
+        jdbcTemplate.update(sql, id, id);
+        log.info("Все записи с user_id {} удалены из таблицы Friendship", id);
     }
 
     private User makeUser(ResultSet rs) throws SQLException {

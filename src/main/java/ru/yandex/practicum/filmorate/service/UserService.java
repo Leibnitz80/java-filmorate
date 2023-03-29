@@ -32,6 +32,11 @@ public class UserService {
         return user;
     }
 
+    public void deleteUserById(Long id) {
+        userStorage.checkUserContains(id);
+        userStorage.deleteUser(id);
+    }
+
     public void makeFriends(Long userId, Long friendId) {
         userStorage.makeFriends(userId, friendId);
     }
@@ -48,8 +53,11 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public List<User> getAllFriends(Long Id) {
-        return userStorage.getAllFriends(Id);
+    public List<User> getAllFriends(Long id) {
+        // Добавил проверку на наличие user, иначе вместо ошибки 404, когда такого юзера нет,
+        // возвращается пустой лист друзей.
+        userStorage.checkUserContains(id);
+        return userStorage.getAllFriends(id);
     }
 
     public List getCommonFriends(Long id1, Long id2) {

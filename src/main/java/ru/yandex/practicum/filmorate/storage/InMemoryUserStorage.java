@@ -44,6 +44,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteUser(Long id) {
         checkUserContains(id);
+        deleteUserFromFriends(id);
         users.remove(id);
     }
 
@@ -58,7 +59,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteFriends(Long friendId, Long userId) {
         User user1 = getUserById(friendId);
-        User user2 = getUserById(friendId);
+        User user2 = getUserById(userId); // Здесь было friendId
         user1.deleteFriend(user2);
         user2.deleteFriend(user1);
     }
@@ -84,5 +85,13 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotFoundException(
                     String.format("Пользователь c id= %d не найден!", id));
         }
+    }
+
+    // Удаление удаляемого user из друзей у других юзеров.
+    private void deleteUserFromFriends(Long id) {
+        User user1 = users.get(id);
+        List<User> friends = user1.getFriends();
+
+        friends.forEach(user2 -> user2.deleteFriend(user1));
     }
 }
