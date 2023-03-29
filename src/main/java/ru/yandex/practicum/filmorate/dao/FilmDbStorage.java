@@ -68,8 +68,8 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film addFilm(Film film) {
         List<Genre> genresList = film.getGenres();
-        String sqlQuery = "select count(1) as row_count from Films where name = ? and releaseDate = ?;";
-        Long rowCount = jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> rs.getLong("row_count"), film.getName(), film.getReleaseDate());
+        String sqlQuery = "select count(1) as row_count from Films where name = ? and releaseDate = ? and description = ?;";
+        Long rowCount = jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> rs.getLong("row_count"), film.getName(), film.getReleaseDate(), film.getDescription());
         if (rowCount > 0) return film;
         String sqlInsertQuery = "insert into Films(name, description, releaseDate, duration, mpa_id)" +
                                 "values(?,?,?,?,?);";
@@ -108,8 +108,12 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void deleteFilm(Integer id) {
         checkFilmContains(id);
+
         String sql = "delete from Films where film_id = ?;";
         jdbcTemplate.update(sql,id);
+
+        // Удаляю оставшийся film_id из всех связанных таблиц
+        deleteFilmFromLikes(id);
         deleteGenres(id);
     }
 
@@ -176,6 +180,7 @@ public class FilmDbStorage implements FilmStorage {
     private void deleteGenres(Integer filmId) {
         String sql = "delete from Genres_relation where film_id = ?;";
         jdbcTemplate.update(sql,filmId);
+        log.info("Все записи с film_id {} удалены из таблицы Genres_relation. ", filmId);
     }
 
     @Override
@@ -200,6 +205,12 @@ public class FilmDbStorage implements FilmStorage {
             throw new NotFoundException(
                     String.format("Фильм c id= %d не найден!", id));
         }
+    }
+
+    private void deleteFilmFromLikes(Integer id) {
+        String sql = "delete from Likes where film_id = ?;";
+        jdbcTemplate.update(sql, id);
+        log.info("Все записи с film_id {} удалены из таблицы likes. ", id);
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

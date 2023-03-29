@@ -73,4 +73,11 @@ public class UserController {
         userService.deleteFriends(id1, id2);
         log.info("Запрос: DELETE deleteFriends обработан успешно");
     }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUserById(@PathVariable("userId") Long id) {
+        log.info("Запрос: DELETE deleteUserById {}", id);
+        userService.deleteUserById(id);
+        log.info("Запрос: DELETE deleteUserById {} обработан успешно", id);
+    }
 }
