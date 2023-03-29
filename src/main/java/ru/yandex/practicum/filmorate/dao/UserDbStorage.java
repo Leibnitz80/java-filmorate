@@ -21,7 +21,7 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public UserDbStorage (JdbcTemplate jdbcTemplate) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -35,7 +35,7 @@ public class UserDbStorage implements UserStorage {
     public User addUser(User user) {
         String sql = "insert into Users(login, name, email, birthday)" +
                 "values(?,?,?,?);";
-        jdbcTemplate.update(sql,user.getLogin(), user.getName(), user.getEmail(), user.getBirthday());
+        jdbcTemplate.update(sql, user.getLogin(), user.getName(), user.getEmail(), user.getBirthday());
         sql = "select user_id as id, login, name, email, birthday from Users where login = ?;";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeUser(rs), user.getLogin());
     }
@@ -44,19 +44,19 @@ public class UserDbStorage implements UserStorage {
     public void updateUser(User user) {
         checkUserContains(user.getId());
         String sql = "update Users " +
-                     "set login = ?," +
-                     "    name = ?," +
-                     "    email = ?," +
-                     "    birthday = ?" +
-                     "where user_id = ?;";
-        jdbcTemplate.update(sql,user.getLogin(), user.getName(), user.getEmail(), user.getBirthday(), user.getId());
+                "set login = ?," +
+                "    name = ?," +
+                "    email = ?," +
+                "    birthday = ?" +
+                "where user_id = ?;";
+        jdbcTemplate.update(sql, user.getLogin(), user.getName(), user.getEmail(), user.getBirthday(), user.getId());
     }
 
     @Override
     public void deleteUser(Long id) {
         checkUserContains(id);
         String sql = "delete from Users where user_id = ?;";
-        jdbcTemplate.update(sql,id);
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
@@ -71,35 +71,35 @@ public class UserDbStorage implements UserStorage {
         checkUserContains(userId);
         checkUserContains(friendId);
         String sql = "insert into Friendship(user_id, friend_id) " +
-                     "values(?,?);";
-        jdbcTemplate.update(sql,userId, friendId);
+                "values(?,?);";
+        jdbcTemplate.update(sql, userId, friendId);
     }
 
     @Override
     public void deleteFriends(Long friendId, Long userId) {
         String sql = "delete from Friendship where user_id in (?,?) and friend_id in (?,?);";
-        jdbcTemplate.update(sql,userId,friendId,userId,friendId);
+        jdbcTemplate.update(sql, userId, friendId, userId, friendId);
     }
 
     @Override
-    public List getAllFriends(Long Id) {
+    public List getAllFriends(Long id) {
         String sql = "select u.user_id, u.login, u.name, u.email, u.birthday " +
-                     "from Friendship f" +
-                     "      inner join Users u on u.user_id = f.friend_id " +
-                     "where f.user_id = ? " +
-                     "order by u.user_id;";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs),Id);
+                "from Friendship f" +
+                "      inner join Users u on u.user_id = f.friend_id " +
+                "where f.user_id = ? " +
+                "order by u.user_id;";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id);
     }
 
     @Override
     public List getCommonFriends(Long id1, Long id2) {
         String sql = "select u.user_id, u.login, u.name, u.email, u.birthday " +
-                     "from Friendship f1 " +
-                     "   inner join Friendship f2 on f2.friend_id = f1.friend_id " +
-                     "      inner join Users u on u.user_id = f2.friend_id " +
-                     "where f1.user_id = ? and f2.user_id = ? " +
-                       "and f1.friend_id <> f2.user_id and f2.friend_id <> f1.user_id;";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs),id1,id2);
+                "from Friendship f1 " +
+                "   inner join Friendship f2 on f2.friend_id = f1.friend_id " +
+                "      inner join Users u on u.user_id = f2.friend_id " +
+                "where f1.user_id = ? and f2.user_id = ? " +
+                "and f1.friend_id <> f2.user_id and f2.friend_id <> f1.user_id;";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id1, id2);
     }
 
     @Override

@@ -31,7 +31,7 @@ class FilmoRateApplicationTests {
                 .email("sdffsdf@mail.ru")
                 .login("First")
                 .name("name1")
-                .birthday(LocalDate.of(2015,1,1))
+                .birthday(LocalDate.of(2015, 1, 1))
                 .build();
 
         user1 = userStorage.addUser(user1);
@@ -51,7 +51,7 @@ class FilmoRateApplicationTests {
                 .email("second@mail.ru")
                 .login("Tsar")
                 .name("Peter")
-                .birthday(LocalDate.of(2014,1,1))
+                .birthday(LocalDate.of(2014, 1, 1))
                 .build();
         user2 = userStorage.addUser(user2);
         List<User> list = userStorage.getUsers();
@@ -59,7 +59,7 @@ class FilmoRateApplicationTests {
         Assertions.assertEquals(2, list.size(), "Должно быть 2 пользователя");
 
         //testMakeFriends + testGetAllFriends
-        userStorage.makeFriends(user1.getId(),user2.getId());
+        userStorage.makeFriends(user1.getId(), user2.getId());
         list = userStorage.getAllFriends(user1.getId());
         Assertions.assertEquals(1, list.size(), "Должен быть 1 друг");
         Assertions.assertEquals(user2.getId(), list.get(0).getId(), "id друга должно быть равно " + user2.getId());
@@ -67,7 +67,7 @@ class FilmoRateApplicationTests {
         Assertions.assertEquals(0, list.size(), "У второго ещё не должно быть друзей");
 
         //testDeleteFriends
-        userStorage.deleteFriends(user1.getId(),user2.getId());
+        userStorage.deleteFriends(user1.getId(), user2.getId());
         list = userStorage.getAllFriends(user1.getId());
         Assertions.assertEquals(0, list.size(), "Не должно быть друзей");
 
@@ -76,14 +76,14 @@ class FilmoRateApplicationTests {
                 .email("third@mail.ru")
                 .login("third")
                 .name("Paul")
-                .birthday(LocalDate.of(2013,1,1))
+                .birthday(LocalDate.of(2013, 1, 1))
                 .build();
         user3 = userStorage.addUser(user3);
         //обоюдная дружба 1-3 и 2-3 --> общий друг id=3
-        userStorage.makeFriends(user1.getId(),user3.getId());
-        userStorage.makeFriends(user2.getId(),user3.getId());
-        userStorage.makeFriends(user3.getId(),user1.getId());
-        userStorage.makeFriends(user3.getId(),user2.getId());
+        userStorage.makeFriends(user1.getId(), user3.getId());
+        userStorage.makeFriends(user2.getId(), user3.getId());
+        userStorage.makeFriends(user3.getId(), user1.getId());
+        userStorage.makeFriends(user3.getId(), user2.getId());
         list = userStorage.getCommonFriends(user1.getId(), user2.getId());
         Assertions.assertEquals(user3.getId(), list.get(0).getId(), "Должен быть один общий друг id =3");
 
@@ -135,13 +135,13 @@ class FilmoRateApplicationTests {
         Assertions.assertEquals("Драма", filmGenres.get(1).getName(), "Второй жанр должен быть драма");
 
         //testAddLike
-        filmStorage.addLike(1,user1.getId());
+        filmStorage.addLike(1, user1.getId());
         film1 = filmStorage.getFilmById(1);
         Assertions.assertEquals(1, film1.getLikesCount(), "Должен быть один лайк");
         Assertions.assertEquals(user1.getId(), film1.getLikes().get(0), "Лайк должен быть от пользователя " + user1.getId());
 
         //testDeleteLike
-        filmStorage.deleteLike(1,user1.getId());
+        filmStorage.deleteLike(1, user1.getId());
         film1 = filmStorage.getFilmById(1);
         Assertions.assertEquals(0, film1.getLikesCount(), "Не должно быть лайков");
 
