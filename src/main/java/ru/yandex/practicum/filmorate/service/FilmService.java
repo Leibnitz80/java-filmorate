@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmService {
     private static final int MAX_LENGTH = 200;
-    private static final LocalDate MIN_DATE = LocalDate.of(1895,12,28);
+    private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
     private static final Comparator<Film> COMP_BY_LIKES = (p0, p1) -> {
         return p1.getLikesCount() - p0.getLikesCount();
     };
@@ -61,7 +60,7 @@ public class FilmService {
 
     public void deleteLike(Integer filmId, Long userId) {
         userStorage.checkUserContains(userId);
-        filmStorage.deleteLike(filmId,userId);
+        filmStorage.deleteLike(filmId, userId);
     }
 
     public List<Film> getCommonFilms(Long userId, Long friendId) {

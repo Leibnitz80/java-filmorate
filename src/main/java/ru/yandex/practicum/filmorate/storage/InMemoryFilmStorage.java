@@ -28,14 +28,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film addFilm(Film film) {
         film.setId(++currId);
-        films.put(film.getId(),film);
+        films.put(film.getId(), film);
         return film;
     }
 
     @Override
     public Film updateFilm(Film film) {
         checkFilmContains(film.getId());
-        films.put(film.getId(),film);
+        films.put(film.getId(), film);
         log.info("Запрос: PUT обработан успешно");
         return film;
     }
@@ -59,12 +59,18 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         List<Film> userFilms =
-            films.values().stream().filter(f -> f.getLikes().contains(userId)).collect(Collectors.toList());
+                films.values().stream().filter(f -> f.getLikes().contains(userId)).collect(Collectors.toList());
         List<Film> friendFilms =
-            films.values().stream().filter(f -> f.getLikes().contains(friendId)).collect(Collectors.toList());
+                films.values().stream().filter(f -> f.getLikes().contains(friendId)).collect(Collectors.toList());
         return userFilms.stream()
                 .filter(friendFilms::contains)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Film> getRecommendations(Long userId) {
+        log.error("method is not implement");
+        return null;
     }
 
     public void checkFilmContains(Integer id) {
