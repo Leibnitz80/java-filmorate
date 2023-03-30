@@ -128,6 +128,7 @@ public class FilmService {
             }
         }
     }
+
     public List<Film> getRecommendations(Long id) {
         userService.getById(id);
         return filmStorage.getRecommendations(id);
