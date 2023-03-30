@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -35,7 +36,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List getTopFilms(@RequestParam(defaultValue  = TOP_LIMIT) Integer count) {
+    public List getTopFilms(@RequestParam(defaultValue = TOP_LIMIT) Integer count) {
         log.info("Запрос: GET getTopFilms");
         return filmService.getTopFilms(count);
     }
@@ -74,5 +75,13 @@ public class FilmController {
         log.info("Запрос: DELETE deleteLike");
         filmService.deleteLike(filmId, userId);
         log.info("Запрос: DELETE deleteLike обработан успешно");
+    }
+
+    @GetMapping("director/{directorId}")
+    public Collection<Film> getFilmsByDirector(
+            @PathVariable Integer directorId,
+            @RequestParam(required = false, defaultValue = "year") String sortBy) {
+        log.info("Запрос: getFilmsByDirector with condition");
+        return filmService.getByDirectorId(directorId, sortBy);
     }
 }
