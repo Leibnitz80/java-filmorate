@@ -19,6 +19,8 @@ public interface FilmStorage {
 
     void deleteLike(Integer filmId, Long userId);
 
+    List<Film> getByDirectorId(Integer id);
+
     List getCommonFilms(Long userId, Long friendId);
 
     void checkFilmContains(Integer id);

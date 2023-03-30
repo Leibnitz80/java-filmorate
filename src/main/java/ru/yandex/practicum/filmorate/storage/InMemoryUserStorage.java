@@ -31,14 +31,14 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User addUser(User user) {
         user.setId(++currId);
-        users.put(user.getId(),user);
+        users.put(user.getId(), user);
         return user;
     }
 
     @Override
     public void updateUser(User user) {
         checkUserContains(user.getId());
-        users.put(user.getId(),user);
+        users.put(user.getId(), user);
     }
 
     @Override

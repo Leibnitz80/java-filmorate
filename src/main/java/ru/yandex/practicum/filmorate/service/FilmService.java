@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -17,10 +18,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private static final int MAX_LENGTH = 200;
-    private static final LocalDate MIN_DATE = LocalDate.of(1895,12,28);
+    private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
     private static final Comparator<Film> COMP_BY_LIKES = (p0, p1) -> {
         return p1.getLikesCount() - p0.getLikesCount();
     };
+
+    private static final Comparator<Film> COMP_BY_LIKES_WHEN_0 = (p0, p1) -> {
+        if (p1.getLikesCount() > 0 && p0.getLikesCount() > 0) {
+            return p1.getLikesCount() - p0.getLikesCount();
+        } else {
+            return p0.getId() - p1.getId();
+        }
+    };
+
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
@@ -64,7 +74,30 @@ public class FilmService {
 
     public void deleteLike(Integer filmId, Long userId) {
         userStorage.checkUserContains(userId);
-        filmStorage.deleteLike(filmId,userId);
+        filmStorage.deleteLike(filmId, userId);
+    }
+
+    public List<Film> getByDirectorId(Integer id, String condition) {
+        List<Film> result = filmStorage.getByDirectorId(id)
+                .stream()
+                .filter(p -> !p.getDirectors().isEmpty())
+                .collect(Collectors.toList());
+
+        if (result == null || result.isEmpty()) {
+            log.error("ошибка: нет такого режиссера или фильмов по ИД режиссера " + id);
+            throw new NotFoundException(
+                    String.format("ошибка: нет такого режиссера или фильмов по id режиссера %d", id));
+        }
+
+        if (condition.equals("year")) {
+            return result;
+        } else {
+            return result.stream()
+                    .filter(p -> !p.getDirectors().isEmpty())
+                    .sorted(COMP_BY_LIKES_WHEN_0)
+                    .collect(Collectors.toList());
+        }
+
     }
 
     public List<Film> getCommonFilms(Long userId, Long friendId) {

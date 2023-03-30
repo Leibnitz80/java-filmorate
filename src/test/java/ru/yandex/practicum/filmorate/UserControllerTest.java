@@ -21,7 +21,7 @@ class UserControllerTest {
                 .email("sdfsdf@mail.ru")
                 .login("VasyaPupkin")
                 .name("name")
-                .birthday(LocalDate.of(2030,1,1))
+                .birthday(LocalDate.of(2030, 1, 1))
                 .build();
         Assertions.assertThrows(ValidationException.class, () -> {
             userService.isValid(user);
@@ -31,7 +31,7 @@ class UserControllerTest {
                 .email("sdfsdf@mail.ru")
                 .login("Vasya Pupkin")
                 .name("name")
-                .birthday(LocalDate.of(2020,1,10))
+                .birthday(LocalDate.of(2020, 1, 10))
                 .build();
         Assertions.assertThrows(ValidationException.class, () -> {
             userService.isValid(user2);
