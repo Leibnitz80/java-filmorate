@@ -192,6 +192,7 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sql,filmId,userId);
     }
 
+    @Override
     public void checkFilmContains(Integer id) {
         String sql = "select count(1) as row_count from Films where film_id = ?;";
         Long rowCount = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getLong("row_count"), id);

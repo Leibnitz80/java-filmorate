@@ -5,6 +5,9 @@ DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS Genres;
 DROP TABLE IF EXISTS Genres_Relation;
 DROP TABLE IF EXISTS Friendship;
+DROP TABLE IF EXISTS Reviews;
+DROP TABLE IF EXISTS ReviewLikes;
+DROP TABLE IF EXISTS ReviewDislikes;
 
 CREATE TABLE IF NOT EXISTS Films(film_id int auto_increment,
 				   name varchar(160),
@@ -44,4 +47,21 @@ CREATE TABLE IF NOT EXISTS Friendship(friendship_id int auto_increment,
                    user_id int,
                    friend_id int
 				  );
-				 
+
+CREATE TABLE IF NOT EXISTS Reviews(review_id int auto_increment,
+                   content varchar(255),
+                   isPositive boolean,
+                   user_id int,
+                   film_id int,
+                   useful int
+				  );
+
+CREATE TABLE IF NOT EXISTS ReviewLikes(like_id int auto_increment,
+				   review_id int,
+				   user_id int
+				  );
+
+CREATE TABLE IF NOT EXISTS ReviewDislikes(dislike_id int auto_increment,
+				   review_id int,
+				   user_id int
+				  );
