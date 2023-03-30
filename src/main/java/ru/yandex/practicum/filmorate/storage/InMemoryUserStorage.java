@@ -59,7 +59,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteFriends(Long friendId, Long userId) {
         User user1 = getUserById(friendId);
-        User user2 = getUserById(userId); // Здесь было friendId
+        User user2 = getUserById(userId);
         user1.deleteFriend(user2);
         user2.deleteFriend(user1);
     }
