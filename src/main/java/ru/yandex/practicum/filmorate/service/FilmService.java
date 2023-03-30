@@ -94,14 +94,14 @@ public class FilmService {
             log.info("Ошибка валидации: Продолжительность фильма должна быть больше нуля");
             throw new ValidationException("Продолжительность фильма должна быть больше нуля");
         }
-        if (film.getMpa().getId() < 1 || film.getMpa().getId() > 5) {
-            log.info("Ошибка валидации: mpa_id должен быть в диапазоне от 1 до 5");
-            throw new ValidationException("mpa_id должен быть в диапазоне от 1 до 5");
+        if (film.getMpa().getId() < 1) {
+            log.info("Ошибка валидации: mpa_id должен быть больше 0");
+            throw new ValidationException("mpa_id должен быть больше 0");
         }
         if (!film.getGenres().isEmpty()) {
-            if (film.getGenres().stream().noneMatch(genre -> genre.getId() >= 1 && genre.getId() <= 6)) {
-                log.info("Ошибка валидации: genre_id должен быть в диапазоне от 1 до 6");
-                throw new ValidationException("genre_id должен быть в диапазоне от 1 до 6");
+            if (film.getGenres().stream().noneMatch(genre -> genre.getId() > 0)) {
+                log.info("Ошибка валидации: genre_id должен быть больше 0");
+                throw new ValidationException("genre_id должен быть больше 0");
             }
         }
     }
