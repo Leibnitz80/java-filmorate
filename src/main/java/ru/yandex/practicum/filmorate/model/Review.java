@@ -27,7 +27,8 @@ public class Review {
     @JsonIgnore
     private Set<Long> dislikes = new HashSet<>();
 
-    public Review() {}
+    public Review() {
+    }
 
     public void addLike(Long userId) {
         likes.add(userId);
