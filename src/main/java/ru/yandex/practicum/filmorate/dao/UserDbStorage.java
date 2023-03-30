@@ -87,7 +87,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public List getAllFriends(Long id) {
         String sql = "select u.user_id, u.login, u.name, u.email, u.birthday " +
-                     "from Friendship f" +
+                     "from Friendship f " +
                      "inner join Users u on u.user_id = f.friend_id " +
                      "where f.user_id = ? " +
                      "order by u.user_id;";
