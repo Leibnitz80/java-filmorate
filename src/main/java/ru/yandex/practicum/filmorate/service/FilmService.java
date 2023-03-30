@@ -3,12 +3,14 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,11 @@ public class FilmService {
     private static final Comparator<Film> COMP_BY_LIKES = (p0, p1) -> {
         return p1.getLikesCount() - p0.getLikesCount();
     };
+
+    private static final Comparator<Film> COMP_BY_YEAR = (p0, p1) -> {
+        return p0.getReleaseDate().compareTo(p1.getReleaseDate());
+    };
+
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final UserService userService;
@@ -63,10 +70,34 @@ public class FilmService {
         filmStorage.deleteLike(filmId, userId);
     }
 
+    public List<Film> getByDirectorId(Integer id, String condition) {
+        List<Film> result = new ArrayList<>();
+
+        if (condition.equals("year")) {
+            result = filmStorage.getByDirectorId(id).stream()
+                    .sorted(COMP_BY_YEAR)
+                    .collect(Collectors.toList());
+        } else if (condition.equals("likes")) {
+            result = filmStorage.getByDirectorId(id);
+        }
+
+        if (result == null || result.isEmpty()) {
+            log.error("ошибка: нет такого режиссера или фильмов по ИД режиссера " + id);
+            throw new NotFoundException(
+                    String.format("ошибка: нет такого режиссера или фильмов по id режиссера %d", id));
+        }
+
+        return result;
+    }
+
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         userStorage.checkUserContains(userId);
         userStorage.checkUserContains(friendId);
         return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    public void deleteFilmById(Integer id) {
+        filmStorage.deleteFilm(id);
     }
 
     public void isValid(Film film) { // используется в тестах, поэтому не может быть private
@@ -86,8 +117,17 @@ public class FilmService {
             log.info("Ошибка валидации: Продолжительность фильма должна быть больше нуля");
             throw new ValidationException("Продолжительность фильма должна быть больше нуля");
         }
+        if (film.getMpa().getId() < 1) {
+            log.info("Ошибка валидации: mpa_id должен быть больше 0");
+            throw new ValidationException("mpa_id должен быть больше 0");
+        }
+        if (!film.getGenres().isEmpty()) {
+            if (film.getGenres().stream().noneMatch(genre -> genre.getId() > 0)) {
+                log.info("Ошибка валидации: genre_id должен быть больше 0");
+                throw new ValidationException("genre_id должен быть больше 0");
+            }
+        }
     }
-
     public List<Film> getRecommendations(Long id) {
         userService.getById(id);
         return filmStorage.getRecommendations(id);

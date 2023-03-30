@@ -56,6 +56,10 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.get(filmId).deleteLike(userId);
     }
 
+    public List<Film> getByDirectorId(Integer id) {
+        return null;
+    }
+
     @Override
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         List<Film> userFilms =
