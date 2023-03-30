@@ -69,8 +69,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendations(Long userId) {
-        log.error("method is not implement");
-        return null;
+        throw new UnsupportedOperationException("method is not implement");
     }
 
     public void checkFilmContains(Integer id) {
