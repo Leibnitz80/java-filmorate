@@ -32,6 +32,10 @@ public class UserService {
         return user;
     }
 
+    public void deleteUserById(Long id) {
+        userStorage.deleteUser(id);
+    }
+
     public void makeFriends(Long userId, Long friendId) {
         userStorage.makeFriends(userId, friendId);
     }
@@ -48,8 +52,9 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public List<User> getAllFriends(Long Id) {
-        return userStorage.getAllFriends(Id);
+    public List<User> getAllFriends(Long id) {
+        userStorage.checkUserContains(id);
+        return userStorage.getAllFriends(id);
     }
 
     public List getCommonFriends(Long id1, Long id2) {
