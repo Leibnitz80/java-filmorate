@@ -33,7 +33,6 @@ public class UserService {
     }
 
     public void deleteUserById(Long id) {
-        userStorage.checkUserContains(id);
         userStorage.deleteUser(id);
     }
 
@@ -54,8 +53,6 @@ public class UserService {
     }
 
     public List<User> getAllFriends(Long id) {
-        // Добавил проверку на наличие user, иначе вместо ошибки 404, когда такого юзера нет,
-        // возвращается пустой лист друзей.
         userStorage.checkUserContains(id);
         return userStorage.getAllFriends(id);
     }
