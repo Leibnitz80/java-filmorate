@@ -53,21 +53,17 @@ public class ReviewDbStorage implements ReviewStorage {
         final String updateReviewSql = "update Reviews " +
                 "set content = ?, " +
                 "    isPositive = ?, " +
-                "    user_id = ?, " +
-                "    film_id = ?, " +
                 "    useful = ? " +
                 "where review_id = ?;";
         jdbcTemplate.update(
                 updateReviewSql,
                 review.getContent(),
                 review.getIsPositive(),
-                review.getUserId(),
-                review.getFilmId(),
                 review.getUseful(),
                 review.getReviewId()
         );
         updateReviewLikesDislikes(review);
-        return review;
+        return getReviewById(review.getReviewId());
     }
 
     @Override
