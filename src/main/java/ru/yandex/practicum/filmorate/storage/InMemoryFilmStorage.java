@@ -71,6 +71,11 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Film> getRecommendations(Long userId) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
     public void checkFilmContains(Integer id) {
         if (!films.containsKey(id)) {
             log.error(String.format("Фильм c id= %d не найден!", id));

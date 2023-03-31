@@ -24,4 +24,6 @@ public interface FilmStorage {
     List getCommonFilms(Long userId, Long friendId);
 
     void checkFilmContains(Integer id);
+
+    List<Film> getRecommendations(Long userId);
 }

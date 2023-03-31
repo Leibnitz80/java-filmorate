@@ -3,9 +3,12 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.dao.UserDbStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
@@ -13,10 +16,13 @@ import java.time.LocalDate;
 
 @SpringBootTest
 class FilmControllerTest {
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void contextLoadsFilm() {
-        FilmService filmService = new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage());
+        FilmService filmService = new FilmService(new InMemoryFilmStorage(),
+                new InMemoryUserStorage(),
+                new UserService(new UserDbStorage(jdbcTemplate)));
         Film film = Film.builder()
                 .id(1)
                 .name("Название фильма")
