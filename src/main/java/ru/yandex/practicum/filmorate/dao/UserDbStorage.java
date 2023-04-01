@@ -6,12 +6,15 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -106,6 +109,28 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
+    public List getUserEvents(Long id) {
+        String sql = "select event_id, eventtimestamp, user_id, eventtype, operation, entity_id " +
+                "from Events " +
+                "where user_id = ? " +
+                "order by eventtimestamp;";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeEvent(rs), id);
+    }
+
+    @Override
+    public void addUserEvent(Long userId, String eventType, String operation, Long entity_id) {
+        String sql = "insert into Events(eventtimestamp, user_id, eventtype, operation, entity_id) " +
+                     "values(?,?,?,?,?);";
+        jdbcTemplate.update(sql, Timestamp.valueOf(LocalDateTime.now()), userId, eventType, operation, entity_id);
+    }
+
+    @Override
+    public void deleteUserEvents(Long id) {
+        String sql = "delete from Events where user_id = ?;";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public void checkUserContains(Long id) {
         log.info("Валидация checkUserContains id={}", id);
         String sql = "select count(1) as row_count from Users where user_id = ?;";
@@ -136,5 +161,16 @@ public class UserDbStorage implements UserStorage {
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
 
         return new User(id, email, login, name, birthday);
+    }
+
+    private Event makeEvent(ResultSet rs) throws SQLException {
+        Long id = rs.getLong("event_id");
+        Long eventTimeStamp = rs.getLong("eventtimestamp");
+        Long userId = rs.getLong("user_id");
+        String eventType = rs.getString("eventtype");
+        String operation = rs.getString("operation");
+        Long entityId = rs.getLong("entity_id");
+
+        return new Event(id, eventTimeStamp, userId, eventType, operation,entityId);
     }
 }

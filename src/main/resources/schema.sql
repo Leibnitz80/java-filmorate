@@ -56,3 +56,12 @@ CREATE TABLE IF NOT EXISTS directors_relation(id int auto_increment,
                  director_id int
               );
 				 
+CREATE TABLE IF NOT EXISTS Events(event_id bigint auto_increment,
+                 eventtimestamp bigint,
+                 user_id int,
+                 eventtype varchar(6),
+                 operation varchar(6),
+                 entity_id int
+              );		
+              
+             
