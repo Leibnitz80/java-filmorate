@@ -11,11 +11,13 @@ import java.util.Set;
 @Setter
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Review {
     private Long reviewId = 0L;
     @NotBlank
     private String content;
+    @NotNull
     private Boolean isPositive;
     @NotNull
     private Long userId;
@@ -23,12 +25,9 @@ public class Review {
     private Integer filmId;
     private int useful;
     @JsonIgnore
-    private Set<Long> likes = new HashSet<>();
+    private final Set<Long> likes = new HashSet<>();
     @JsonIgnore
-    private Set<Long> dislikes = new HashSet<>();
-
-    public Review() {
-    }
+    private final Set<Long> dislikes = new HashSet<>();
 
     public void addLike(Long userId) {
         likes.add(userId);

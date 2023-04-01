@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +13,10 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/reviews")
+@AllArgsConstructor
 public class ReviewController {
     private static final String TOP_LIMIT = "10";
     private final ReviewService reviewService;
-
-    @Autowired
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
 
     @GetMapping("/{id}")
     public Review getById(@PathVariable("id") Long id) {

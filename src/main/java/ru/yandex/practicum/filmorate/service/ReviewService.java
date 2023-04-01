@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,17 +13,11 @@ import java.util.List;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class ReviewService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final ReviewStorage reviewStorage;
-
-    @Autowired
-    public ReviewService(FilmStorage filmStorage, UserStorage userStorage, ReviewStorage reviewStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.reviewStorage = reviewStorage;
-    }
 
     public List<Review> getReviews() {
         return reviewStorage.getReviews();

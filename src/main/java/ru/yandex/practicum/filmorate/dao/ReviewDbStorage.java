@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -13,38 +16,31 @@ import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 @Slf4j
 @Primary
+@AllArgsConstructor
 public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public ReviewDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
     public Review addReview(Review review) {
-        final String insertReviewSql = "insert into Reviews(content, isPositive, user_id, film_id, useful) " +
-                "values(?,?,?,?,?);";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-                PreparedStatement prst = connection.prepareStatement(insertReviewSql, new String[]{"review_id"});
-                prst.setString(1, review.getContent());
-                prst.setBoolean(2, review.getIsPositive());
-                prst.setLong(3, review.getUserId());
-                prst.setInt(4, review.getFilmId());
-                prst.setInt(5, review.getUseful());
-                return prst;
-            }, keyHolder
-        );
-        review.setReviewId(keyHolder.getKey().longValue());
-        updateReviewLikesDislikes(review);
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("Reviews")
+                .usingGeneratedKeyColumns("review_id");
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("content", review.getContent())
+                .addValue("isPositive", review.getIsPositive())
+                .addValue("user_id", review.getUserId())
+                .addValue("film_id", review.getFilmId())
+                .addValue("useful", review.getUseful());
+
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        review.setReviewId(id);
+
         return getReviewById(review.getReviewId());
     }
 
@@ -78,8 +74,7 @@ public class ReviewDbStorage implements ReviewStorage {
         final String getReviewByIdSql =
                 "select review_id, content, isPositive, user_id, film_id, useful " +
                 "from Reviews where review_id = ?;";
-        Review review = jdbcTemplate.queryForObject(getReviewByIdSql, (rs, rowNum) -> makeReview(rs), id);
-        return review;
+        return jdbcTemplate.queryForObject(getReviewByIdSql, (rs, rowNum) -> makeReview(rs), id);
     }
 
     @Override
@@ -107,12 +102,9 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public void checkReviewContains(Long id) {
         String sql = "select count(1) as row_count from Reviews where review_id = ?;";
-        Long rowCount = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getLong("row_count"), id);
-        if (rowCount == 0) {
-            log.error(String.format("Отзыв c id= %d не найден!", id));
-            throw new NotFoundException(
-                    String.format("Отзыв c id= %d не найден!", id));
-        }
+        Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getLong("row_count"), id))
+                .filter(x -> x > 0)
+                .orElseThrow(() -> new NotFoundException(String.format("Отзыв c id= %d не найден!", id)));
     }
 
     private Review makeReview(ResultSet rs) throws SQLException {
@@ -130,8 +122,6 @@ public class ReviewDbStorage implements ReviewStorage {
                 .userId(userId)
                 .filmId(filmId)
                 .useful(useful)
-                .likes(new HashSet<>())
-                .dislikes(new HashSet<>())
                 .build();
         review.getLikes().addAll(getReviewLikes(id));
         review.getDislikes().addAll(getReviewDislikes(id));
