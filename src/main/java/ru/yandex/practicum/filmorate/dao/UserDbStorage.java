@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -113,7 +114,7 @@ public class UserDbStorage implements UserStorage {
         String sql = "select event_id, eventtimestamp, user_id, eventtype, operation, entity_id " +
                 "from Events " +
                 "where user_id = ? " +
-                "order by eventtimestamp;";
+                "order by eventtimestamp";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeEvent(rs), id);
     }
 
@@ -121,7 +122,7 @@ public class UserDbStorage implements UserStorage {
     public void addUserEvent(Long userId, String eventType, String operation, Long entity_id) {
         String sql = "insert into Events(eventtimestamp, user_id, eventtype, operation, entity_id) " +
                      "values(?,?,?,?,?);";
-        jdbcTemplate.update(sql, Timestamp.valueOf(LocalDateTime.now()), userId, eventType, operation, entity_id);
+        jdbcTemplate.update(sql, new Date().getTime(), userId, eventType, operation, entity_id);
     }
 
     @Override
@@ -164,13 +165,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     private Event makeEvent(ResultSet rs) throws SQLException {
-        Long id = rs.getLong("event_id");
+        Long eventId = rs.getLong("event_id");
         Long eventTimeStamp = rs.getLong("eventtimestamp");
         Long userId = rs.getLong("user_id");
         String eventType = rs.getString("eventtype");
         String operation = rs.getString("operation");
         Long entityId = rs.getLong("entity_id");
 
-        return new Event(id, eventTimeStamp, userId, eventType, operation,entityId);
+        return new Event(eventId, eventTimeStamp, userId, eventType, operation,entityId);
     }
 }

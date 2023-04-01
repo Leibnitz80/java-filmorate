@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS Directors_Relation;
 DROP TABLE IF EXISTS Reviews;
 DROP TABLE IF EXISTS ReviewLikes;
 DROP TABLE IF EXISTS ReviewDislikes;
+DROP TABLE IF EXISTS Events;
 
 CREATE TABLE IF NOT EXISTS Films(film_id int auto_increment,
 				   name varchar(160),

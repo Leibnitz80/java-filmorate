@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 public class Event {
-    private Long id;
+    private Long eventId;
     @NotBlank
     private Long timestamp;
     @NotBlank
@@ -18,5 +18,5 @@ public class Event {
     @NotBlank
     private String operation;
     @NotBlank
-    private Long entity_id;
+    private Long entityId;
 }

@@ -44,7 +44,7 @@ public class UserService {
 
     public void deleteFriends(Long friendId, Long userId) {
         userStorage.deleteFriends(friendId, userId);
-        userStorage.addUserEvent(userId, "FRIEND", "REMOVE", friendId);
+        userStorage.addUserEvent(friendId, "FRIEND", "REMOVE", userId);
     }
 
     public List getAll() {

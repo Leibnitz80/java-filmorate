@@ -94,4 +94,19 @@ public class InMemoryUserStorage implements UserStorage {
 
         friends.forEach(user2 -> user2.deleteFriend(user1));
     }
+
+    @Override
+    public List getUserEvents(Long id) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public void addUserEvent(Long userId, String eventType, String operation, Long entity_id) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public void deleteUserEvents(Long id) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
 }
