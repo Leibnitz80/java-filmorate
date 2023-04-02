@@ -57,6 +57,7 @@ public class FilmService {
     public void addLike(Integer filmId, Long userId) {
         userStorage.checkUserContains(userId);
         filmStorage.addLike(filmId, userId);
+        userStorage.addUserEvent(userId, "LIKE", "ADD", Long.valueOf(filmId));
     }
 
     public Film update(Film film) {
@@ -68,6 +69,7 @@ public class FilmService {
     public void deleteLike(Integer filmId, Long userId) {
         userStorage.checkUserContains(userId);
         filmStorage.deleteLike(filmId, userId);
+        userStorage.addUserEvent(userId, "LIKE", "REMOVE", Long.valueOf(filmId));
     }
 
     public List<Film> getByDirectorId(Integer id, String condition) {

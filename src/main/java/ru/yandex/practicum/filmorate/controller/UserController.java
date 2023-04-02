@@ -43,6 +43,12 @@ public class UserController {
         return userService.getCommonFriends(id1, id2);
     }
 
+    @GetMapping("/{id}/feed")
+    public List getUserEvents(@PathVariable("id") Long id) {
+        log.info("Запрос: GET getUserEvents");
+        return userService.getUserEvents(id);
+    }
+
     @PostMapping
     public User add(@Valid @RequestBody User user) {
         log.info("Запрос: POST {}", user);
