@@ -108,25 +108,25 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List getUserEvents(Long id) {
+    public List getUserEvents(Long userId) {
         String sql = "select event_id, eventtimestamp, user_id, eventtype, operation, entity_id " +
                 "from Events " +
                 "where user_id = ? " +
                 "order by eventtimestamp";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeEvent(rs), id);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeEvent(rs), userId);
     }
 
     @Override
-    public void addUserEvent(Long userId, String eventType, String operation, Long entity_id) {
+    public void addUserEvent(Long userId, String eventType, String operation, Long entityId) {
         String sql = "insert into Events(eventtimestamp, user_id, eventtype, operation, entity_id) " +
                      "values(?,?,?,?,?);";
-        jdbcTemplate.update(sql, new Date().getTime(), userId, eventType, operation, entity_id);
+        jdbcTemplate.update(sql, new Date().getTime(), userId, eventType, operation, entityId);
     }
 
     @Override
-    public void deleteUserEvents(Long id) {
+    public void deleteUserEvents(Long userId) {
         String sql = "delete from Events where user_id = ?;";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, userId);
     }
 
     @Override
