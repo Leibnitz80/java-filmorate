@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -43,54 +42,7 @@ public class FilmService {
     }
 
     public List<Film> getTopFilms(Integer count, Integer genreId, Integer year) {
-        //added only genre filter
-        if (genreId != null && year == null) {
-            return getAll().stream()
-                    .filter(p -> {
-                        for (Genre genre : p.getGenres()) {
-                            if (genre.getId() == genreId) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    })
-                    .sorted(COMP_BY_LIKES)
-                    .limit(count)
-                    .collect(Collectors.toList());
-        } else if (genreId != null && year != null) { //added genre and year filter
-            return getAll().stream()
-                    .filter(p -> {
-                        for (Genre genre : p.getGenres()) {
-                            if (genre.getId() == genreId) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    })
-                    .filter(p -> {
-                        LocalDate releaseDate = p.getReleaseDate();
-                        return releaseDate.isAfter(LocalDate.of(year - 1, 12, 31))
-                                && releaseDate.isBefore(LocalDate.of(year + 1, 1, 1));
-                    })
-                    .sorted(COMP_BY_LIKES)
-                    .limit(count)
-                    .collect(Collectors.toList());
-        } else if (genreId == null && year != null) { //added only year filter
-            return getAll().stream()
-                    .filter(p -> {
-                        LocalDate releaseDate = p.getReleaseDate();
-                        return releaseDate.isAfter(LocalDate.of(year - 1, 12, 31))
-                                && releaseDate.isBefore(LocalDate.of(year + 1, 1, 1));
-                    })
-                    .sorted(COMP_BY_LIKES)
-                    .limit(count)
-                    .collect(Collectors.toList());
-        } else { //no additional filters added
-            return getAll().stream()
-                    .sorted(COMP_BY_LIKES)
-                    .limit(count)
-                    .collect(Collectors.toList());
-        }
+        return filmStorage.getTopFilms(count, genreId, year);
     }
 
     public Film add(Film film) {

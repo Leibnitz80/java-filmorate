@@ -26,4 +26,6 @@ public interface FilmStorage {
     void checkFilmContains(Integer id);
 
     List<Film> getRecommendations(Long userId);
+
+    List<Film> getTopFilms(Integer count, Integer genreId, Integer year);
 }
