@@ -46,8 +46,7 @@ public class FilmService {
         //added only genre filter
         if (genreId != null && year == null) {
             return getAll().stream()
-                    .filter(p ->
-                    {
+                    .filter(p -> {
                         for (Genre genre : p.getGenres()) {
                             if (genre.getId() == genreId) {
                                 return true;
@@ -62,8 +61,7 @@ public class FilmService {
         //added genre and year filter
         else if (genreId != null && year != null) {
             return getAll().stream()
-                    .filter(p ->
-                    {
+                    .filter(p -> {
                         for (Genre genre : p.getGenres()) {
                             if (genre.getId() == genreId) {
                                 return true;
@@ -71,8 +69,7 @@ public class FilmService {
                         }
                         return false;
                     })
-                    .filter(p ->
-                    {
+                    .filter(p -> {
                         LocalDate releaseDate = p.getReleaseDate();
                         return releaseDate.isAfter(LocalDate.of(year - 1, 12, 31))
                                 && releaseDate.isBefore(LocalDate.of(year + 1, 1, 1));
@@ -84,8 +81,7 @@ public class FilmService {
         //added only year filter
         else if (genreId == null && year != null) {
             return getAll().stream()
-                    .filter(p ->
-                    {
+                    .filter(p -> {
                         LocalDate releaseDate = p.getReleaseDate();
                         return releaseDate.isAfter(LocalDate.of(year - 1, 12, 31))
                                 && releaseDate.isBefore(LocalDate.of(year + 1, 1, 1));
