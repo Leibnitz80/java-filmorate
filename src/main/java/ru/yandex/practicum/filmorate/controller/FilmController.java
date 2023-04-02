@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -36,9 +37,11 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List getTopFilms(@RequestParam(defaultValue = TOP_LIMIT) Integer count) {
+    public List getTopFilms(@RequestParam(required = false, defaultValue = TOP_LIMIT, name = "count") Integer count,
+                            @RequestParam(required = false, name = "genreId") @Nullable Integer genreId,
+                            @RequestParam(required = false, name = "year") @Nullable Integer year) {
         log.info("Запрос: GET getTopFilms");
-        return filmService.getTopFilms(count);
+        return filmService.getTopFilms(count, genreId, year);
     }
 
     @GetMapping("/common")
@@ -91,4 +94,5 @@ public class FilmController {
         log.info("Запрос: getFilmsByDirector with condition");
         return filmService.getByDirectorId(directorId, sortBy);
     }
+
 }
