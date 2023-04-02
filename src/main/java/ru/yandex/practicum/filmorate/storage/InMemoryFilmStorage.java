@@ -77,7 +77,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getTopFilms(Integer count, Integer genreId, Integer year) {
+    public List<Film> getFilmsByTitle(String query) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public List<Film> getFilmsByDirector(String query) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public List<Film> getFilmsAnywayByTitle(String query) {
         throw new UnsupportedOperationException("method is not implement");
     }
 
