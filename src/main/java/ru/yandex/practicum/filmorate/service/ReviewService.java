@@ -49,36 +49,36 @@ public class ReviewService {
     }
 
     public void deleteReview(Long id) {
-        Review deleteReview = reviewStorage.getReviewById(id);
         reviewStorage.checkReviewContains(id);
+        Review deleteReview = reviewStorage.getReviewById(id);
         userStorage.addUserEvent(deleteReview.getUserId(), "REVIEW", "REMOVE", id);
         reviewStorage.deleteReview(id);
     }
 
     public void addLike(Long id, Long userId) {
-        final Review review = getReviewById(id);
         userStorage.checkUserContains(userId);
+        final Review review = getReviewById(id);
         review.addLike(userId);
         reviewStorage.updateReview(review);
     }
 
     public void addDislike(Long id, Long userId) {
-        final Review review = getReviewById(id);
         userStorage.checkUserContains(userId);
+        final Review review = getReviewById(id);
         review.addDislike(userId);
         reviewStorage.updateReview(review);
     }
 
     public void removeLike(Long id, Long userId) {
-        final Review review = getReviewById(id);
         userStorage.checkUserContains(userId);
+        final Review review = getReviewById(id);
         review.removeLike(userId);
         reviewStorage.updateReview(review);
     }
 
     public void removeDislike(Long id, Long userId) {
-        final Review review = getReviewById(id);
         userStorage.checkUserContains(userId);
+        final Review review = getReviewById(id);
         review.removeDislike(userId);
         reviewStorage.updateReview(review);
     }

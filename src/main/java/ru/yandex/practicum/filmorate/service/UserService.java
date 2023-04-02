@@ -23,8 +23,7 @@ public class UserService {
 
     public User add(User user) {
         isValid(user);
-        user = userStorage.addUser(user);
-        return user;
+        return userStorage.addUser(user);
     }
 
     public User update(User user) {
@@ -35,6 +34,7 @@ public class UserService {
 
     public void deleteUserById(Long id) {
         userStorage.deleteUser(id);
+        userStorage.deleteUserEvents(id);
     }
 
     public void makeFriends(Long userId, Long friendId) {
