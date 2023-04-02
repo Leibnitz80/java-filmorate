@@ -98,6 +98,43 @@ public class FilmService {
         return filmStorage.getCommonFilms(userId, friendId);
     }
 
+
+    public List<Film> getRecommendations(Long id) {
+        userService.getById(id);
+        return filmStorage.getRecommendations(id);
+    }
+
+    public List<Film> getSearchFilms(String query, List<String> by) {
+        // Проверка на то, что @RequestParam by передан корректно,
+        // иначе ValidationException.
+        if ((by.size() > 2) || (by.size() == 2 && !(by.contains("title") && by.contains("director")))
+                || (by.size() == 1 && !(by.contains("title") || by.contains("director")))) {
+            throw new ValidationException("Неправильный @RequestParam: " + by);
+        }
+
+        List<Film> searchFilms = new ArrayList<>();
+
+        switch (by.size()) {
+            case 1:
+                if (by.contains("title")) {
+                    searchFilms = filmStorage.getFilmsByTitle(query);
+                }
+
+                if (by.contains("director")) {
+                    searchFilms = filmStorage.getFilmsByDirector(query);
+                }
+                break;
+
+            case 2:
+                if (by.contains("title") && by.contains("director")) {
+                    searchFilms = filmStorage.getFilmsAnywayByTitle(query);
+                }
+                break;
+        }
+
+        return searchFilms;
+    }
+
     public void deleteFilmById(Integer id) {
         filmStorage.deleteFilm(id);
     }
@@ -129,10 +166,5 @@ public class FilmService {
                 throw new ValidationException("genre_id должен быть больше 0");
             }
         }
-    }
-
-    public List<Film> getRecommendations(Long id) {
-        userService.getById(id);
-        return filmStorage.getRecommendations(id);
     }
 }

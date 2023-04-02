@@ -47,6 +47,12 @@ public class FilmController {
         return filmService.getCommonFilms(userId, friendId);
     }
 
+    @GetMapping("/search")
+    public List<Film> getSearchFilms(@RequestParam String query, @RequestParam List<String> by) {
+        log.info("Запрос: GET getSearchFilms");
+        return filmService.getSearchFilms(query, by);
+    }
+
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
         log.info("Запрос: POST {}", film);
