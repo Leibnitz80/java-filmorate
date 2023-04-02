@@ -26,4 +26,10 @@ public interface FilmStorage {
     void checkFilmContains(Integer id);
 
     List<Film> getRecommendations(Long userId);
+
+    List<Film> getFilmsByTitle(String query);
+
+    List<Film> getFilmsByDirector(String query);
+
+    List<Film> getFilmsAnywayByTitle(String query);
 }
