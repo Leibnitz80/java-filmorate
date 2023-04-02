@@ -258,8 +258,8 @@ public class FilmDbStorage implements FilmStorage {
                             "JOIN Genres ON  Genres_Relation.genre_id = Genres.genre_id " +
                             "WHERE Genres_Relation.film_id IN (%s)", inSql),
                     filmIds.toArray(),
-                    (rs, rowNum) -> filmsMap.get(rs.getInt("film_id")).getGenres().
-                            add(new Genre(rs.getInt("genre_id"), rs.getString("name"))));
+                    (rs, rowNum) -> filmsMap.get(rs.getInt("film_id")).getGenres()
+                            .add(new Genre(rs.getInt("genre_id"), rs.getString("name"))));
 
         } catch (Exception ex) {
             log.error("error trying get genres for films");
