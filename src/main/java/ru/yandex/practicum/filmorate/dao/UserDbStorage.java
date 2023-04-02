@@ -28,7 +28,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List getUsers() {
+    public List<User> getUsers() {
         String sql = "select user_id, login, name, email, birthday from Users;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     }
@@ -87,7 +87,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List getAllFriends(Long id) {
+    public List<User> getAllFriends(Long id) {
         String sql = "select u.user_id, u.login, u.name, u.email, u.birthday " +
                      "from Friendship f " +
                      "inner join Users u on u.user_id = f.friend_id " +
@@ -97,7 +97,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List getCommonFriends(Long id1, Long id2) {
+    public List<User> getCommonFriends(Long id1, Long id2) {
         String sql = "select u.user_id, u.login, u.name, u.email, u.birthday " +
                      "from Friendship f1 " +
                      "inner join Friendship f2 on f2.friend_id = f1.friend_id " +
@@ -108,7 +108,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List getUserEvents(Long userId) {
+    public List<Event> getUserEvents(Long userId) {
         String sql = "select event_id, eventtimestamp, user_id, eventtype, operation, entity_id " +
                 "from Events " +
                 "where user_id = ? " +
