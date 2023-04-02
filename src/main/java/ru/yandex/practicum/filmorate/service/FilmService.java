@@ -57,9 +57,7 @@ public class FilmService {
                     .sorted(COMP_BY_LIKES)
                     .limit(count)
                     .collect(Collectors.toList());
-        }
-        //added genre and year filter
-        else if (genreId != null && year != null) {
+        } else if (genreId != null && year != null) { //added genre and year filter
             return getAll().stream()
                     .filter(p -> {
                         for (Genre genre : p.getGenres()) {
@@ -77,9 +75,7 @@ public class FilmService {
                     .sorted(COMP_BY_LIKES)
                     .limit(count)
                     .collect(Collectors.toList());
-        }
-        //added only year filter
-        else if (genreId == null && year != null) {
+        } else if (genreId == null && year != null) { //added only year filter
             return getAll().stream()
                     .filter(p -> {
                         LocalDate releaseDate = p.getReleaseDate();
@@ -89,9 +85,7 @@ public class FilmService {
                     .sorted(COMP_BY_LIKES)
                     .limit(count)
                     .collect(Collectors.toList());
-        }
-        //no additional filters added
-        else {
+        } else { //no additional filters added
             return getAll().stream()
                     .sorted(COMP_BY_LIKES)
                     .limit(count)
