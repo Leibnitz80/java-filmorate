@@ -173,7 +173,7 @@ public class FilmDbStorage implements FilmStorage {
                                           "WHERE xm.USER_ID = ? " +
                                           "GROUP BY xf.USER_ID " +
                                           "ORDER BY count(xf.FILM_ID) desc " +
-                                          "LIMIT 1 ) "+
+                                          "LIMIT 1 ) " +
                     "AND lm.FILM_ID IS NULL ";
         return jdbcTemplate.query(sql, (rs, rowNum) -> this.getFilmById(rs.getInt("film_id")), userId, userId);
     }
