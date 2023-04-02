@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -38,10 +39,12 @@ public class UserService {
 
     public void makeFriends(Long userId, Long friendId) {
         userStorage.makeFriends(userId, friendId);
+        userStorage.addUserEvent(userId, "FRIEND", "ADD", friendId);
     }
 
     public void deleteFriends(Long friendId, Long userId) {
         userStorage.deleteFriends(friendId, userId);
+        userStorage.addUserEvent(friendId, "FRIEND", "REMOVE", userId);
     }
 
     public List getAll() {
@@ -59,6 +62,11 @@ public class UserService {
 
     public List getCommonFriends(Long id1, Long id2) {
         return userStorage.getCommonFriends(id1, id2);
+    }
+
+    public List<Event> getUserEvents(Long id) {
+        userStorage.checkUserContains(id);
+        return userStorage.getUserEvents(id);
     }
 
     public void isValid(User user) {
