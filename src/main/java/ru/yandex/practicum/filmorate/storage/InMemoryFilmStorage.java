@@ -91,6 +91,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         throw new UnsupportedOperationException("method is not implement");
     }
 
+    @Override
+    public List<Film> getTopFilms(Integer count, Integer genreId, Integer year) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
     public void checkFilmContains(Integer id) {
         if (!films.containsKey(id)) {
             log.error(String.format("Фильм c id= %d не найден!", id));
