@@ -51,8 +51,6 @@ public class FilmController {
     public List<Film> getSearchFilms(@RequestParam String query, @RequestParam List<String> by) {
         log.info("Запрос: GET getSearchFilms");
         return filmService.getSearchFilms(query, by);
-
-
     }
 
     @PostMapping
