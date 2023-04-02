@@ -32,5 +32,6 @@ public interface FilmStorage {
     List<Film> getFilmsByDirector(String query);
 
     List<Film> getFilmsAnywayByTitle(String query);
+
     List<Film> getTopFilms(Integer count, Integer genreId, Integer year);
 }
