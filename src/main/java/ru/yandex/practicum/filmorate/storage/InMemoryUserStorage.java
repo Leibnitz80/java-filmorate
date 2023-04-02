@@ -96,17 +96,17 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List getUserEvents(Long id) {
+    public List getUserEvents(Long userId) {
         throw new UnsupportedOperationException("method is not implement");
     }
 
     @Override
-    public void addUserEvent(Long userId, String eventType, String operation, Long entity_id) {
+    public void addUserEvent(Long userId, String eventType, String operation, Long entityId) {
         throw new UnsupportedOperationException("method is not implement");
     }
 
     @Override
-    public void deleteUserEvents(Long id) {
+    public void deleteUserEvents(Long userId) {
         throw new UnsupportedOperationException("method is not implement");
     }
 }
