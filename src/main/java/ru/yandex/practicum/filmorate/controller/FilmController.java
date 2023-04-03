@@ -36,9 +36,11 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List getTopFilms(@RequestParam(defaultValue = TOP_LIMIT) Integer count) {
+    public List getTopFilms(@RequestParam(required = false, defaultValue = TOP_LIMIT, name = "count") Integer count,
+                            @RequestParam(required = false, name = "genreId") Integer genreId,
+                            @RequestParam(required = false, name = "year") Integer year) {
         log.info("Запрос: GET getTopFilms");
-        return filmService.getTopFilms(count);
+        return filmService.getTopFilms(count, genreId, year);
     }
 
     @GetMapping("/common")
@@ -97,4 +99,5 @@ public class FilmController {
         log.info("Запрос: getFilmsByDirector with condition");
         return filmService.getByDirectorId(directorId, sortBy);
     }
+
 }
