@@ -38,8 +38,8 @@ public class FilmController {
 
     @GetMapping("/popular")
     public List getTopFilms(@RequestParam(required = false, defaultValue = TOP_LIMIT, name = "count") Integer count,
-                            @RequestParam(required = false, name = "genreId") @Nullable Integer genreId,
-                            @RequestParam(required = false, name = "year") @Nullable Integer year) {
+                            @RequestParam(required = false, name = "genreId") Integer genreId,
+                            @RequestParam(required = false, name = "year") Integer year) {
         log.info("Запрос: GET getTopFilms");
         return filmService.getTopFilms(count, genreId, year);
     }

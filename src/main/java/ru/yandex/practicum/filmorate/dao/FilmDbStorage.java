@@ -277,25 +277,20 @@ public class FilmDbStorage implements FilmStorage {
             currentCondition = yearAndGenreConditions;
         }
 
-        try {
-            SqlRowSet rs = jdbcTemplate.queryForRowSet(
-                    "select films.film_id, films.name, films.description, films.releaseDate," +
-                            " films.duration, films.mpa_id, Mpa.name as MPAN from films " +
-                            "join Mpa on films.mpa_id = Mpa.mpa_id " +
-                            "left join Likes on films.film_id = Likes.film_id " +
-                            currentCondition +
-                            "group by films.film_id " +
-                            "order by count(Likes.user_id) DESC " +
-                            "limit " + count
-            );
-            while (rs.next()) {
-                Film film = convertSqlRowSetToFilm(rs);
-                filmsMap.put(film.getId(), film);
-                films.add(film);
-            }
-        } catch (Exception ex) {
-            log.error("error getting top films");
-            ex.printStackTrace();
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(
+                "select films.film_id, films.name, films.description, films.releaseDate," +
+                        " films.duration, films.mpa_id, Mpa.name as MPAN from films " +
+                        "join Mpa on films.mpa_id = Mpa.mpa_id " +
+                        "left join Likes on films.film_id = Likes.film_id " +
+                        currentCondition +
+                        "group by films.film_id " +
+                        "order by count(Likes.user_id) DESC " +
+                        "limit " + count
+        );
+        while (rs.next()) {
+            Film film = convertSqlRowSetToFilm(rs);
+            filmsMap.put(film.getId(), film);
+            films.add(film);
         }
 
         if (!filmsMap.isEmpty()) {
@@ -322,22 +317,16 @@ public class FilmDbStorage implements FilmStorage {
         List<Integer> filmIds = new ArrayList<>(filmsMap.keySet());
         String inSql = String.join(",", Collections.nCopies(filmIds.size(), "?"));
 
-        try {
-            jdbcTemplate.query(
-                    String.format("SELECT Genres_Relation.film_id,Genres_Relation.genre_id, Genres.name " +
-                            "FROM Genres_Relation " +
-                            "JOIN Genres ON  Genres_Relation.genre_id = Genres.genre_id " +
-                            "WHERE Genres_Relation.film_id IN (%s)", inSql),
-                    filmIds.toArray(),
-                    (rs, rowNum) -> filmsMap.get(rs.getInt("film_id")).getGenres()
-                            .add(new Genre(rs.getInt("genre_id"), rs.getString("name"))));
+        jdbcTemplate.query(
+                String.format("SELECT Genres_Relation.film_id,Genres_Relation.genre_id, Genres.name " +
+                        "FROM Genres_Relation " +
+                        "JOIN Genres ON  Genres_Relation.genre_id = Genres.genre_id " +
+                        "WHERE Genres_Relation.film_id IN (%s)", inSql),
+                filmIds.toArray(),
+                (rs, rowNum) -> filmsMap.get(rs.getInt("film_id")).getGenres()
+                        .add(new Genre(rs.getInt("genre_id"), rs.getString("name"))));
 
-        } catch (Exception ex) {
-            log.error("error trying get genres for films");
-            ex.printStackTrace();
-        }
-
-        return filmsMap.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(filmsMap.values());
     }
 
     private void updateGenres(List<Genre> genres, Integer filmId) {
