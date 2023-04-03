@@ -41,11 +41,8 @@ public class FilmService {
         return filmStorage.getFilmById(id);
     }
 
-    public List<Film> getTopFilms(Integer count) {
-        return getAll().stream()
-                .sorted(COMP_BY_LIKES)
-                .limit(count)
-                .collect(Collectors.toList());
+    public List<Film> getTopFilms(Integer count, Integer genreId, Integer year) {
+        return filmStorage.getTopFilms(count, genreId, year);
     }
 
     public Film add(Film film) {
