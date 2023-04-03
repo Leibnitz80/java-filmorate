@@ -34,18 +34,24 @@ public class ReviewService {
     public Review addReview(Review review) {
         filmStorage.checkFilmContains(review.getFilmId());
         userStorage.checkUserContains(review.getUserId());
-        return reviewStorage.addReview(review);
+        Review newReview = reviewStorage.addReview(review);
+        userStorage.addUserEvent(newReview.getUserId(), "REVIEW", "ADD", newReview.getReviewId());
+        return newReview;
     }
 
     public Review updateReview(Review review) {
         reviewStorage.checkReviewContains(review.getReviewId());
         filmStorage.checkFilmContains(review.getFilmId());
         userStorage.checkUserContains(review.getUserId());
-        return reviewStorage.updateReview(review);
+        Review updateReview = reviewStorage.updateReview(review);
+        userStorage.addUserEvent(updateReview.getUserId(), "REVIEW", "UPDATE", updateReview.getReviewId());
+        return updateReview;
     }
 
     public void deleteReview(Long id) {
+        Review deleteReview = reviewStorage.getReviewById(id);
         reviewStorage.checkReviewContains(id);
+        userStorage.addUserEvent(deleteReview.getUserId(), "REVIEW", "REMOVE", id);
         reviewStorage.deleteReview(id);
     }
 

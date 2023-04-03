@@ -164,26 +164,18 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendations(Long userId) {
-        String sql = " select * " +
-                " from Films " +
-                " where film_id in (" +
-                "    select RESULT.BESTUSERSFILMS as RECOMENDATION_FILM_ID " +
-                "    from (select IFNULL(USERSFILMS.film_id, -1) as USERSFILMS, BESTUSERSFILMS.film_id as BESTUSERSFILMS " +
-                "          from (select film_id from Likes where user_id = ?) as USERSFILMS " +
-                "                   right join (select film_id " +
-                "                               from Likes " +
-                "                               where user_id IN (" +
-                "                                   select BESTUSER.user_id " +
-                "                                   from (select L2.user_id, COUNT(L2.user_id) " +
-                "                                         from (select * from Likes where user_id = ?) as L1 " +
-                "                                                  left join Likes as L2 on L1.film_id = L2.film_id " +
-                "                                         where L2.user_id <> ? " +
-                "                                         group by L2.user_id " +
-                "                                         order by COUNT(L2.user_id) desc " +
-                "                                         LIMIT 1) as BESTUSER)) as BESTUSERSFILMS " +
-                "                              on USERSFILMS.film_id = BESTUSERSFILMS.film_id) as RESULT " +
-                "    where RESULT.USERSFILMS = -1)";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> this.getFilmById(rs.getInt("film_id")), userId, userId, userId);
+        String sql = "SELECT lf.FILM_ID " +
+                     "from Likes lf " +
+                           "left join Likes lm on lm.FILM_ID = lf.FILM_ID AND lm.USER_ID = ? " +
+                     "WHERE lf.USER_ID IN (SELECT xf.USER_ID " +
+                                          "FROM Likes xm " +
+                                          "   INNER JOIN Likes xf ON xf.FILM_ID = xm.FILM_ID AND xf.USER_ID <> xm.USER_ID " +
+                                          "WHERE xm.USER_ID = ? " +
+                                          "GROUP BY xf.USER_ID " +
+                                          "ORDER BY count(xf.FILM_ID) desc " +
+                                          "LIMIT 1 ) " +
+                    "AND lm.FILM_ID IS NULL ";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> this.getFilmById(rs.getInt("film_id")), userId, userId);
     }
 
     @Override
