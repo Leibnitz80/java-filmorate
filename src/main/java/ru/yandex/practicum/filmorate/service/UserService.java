@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.ActionType;
+import ru.yandex.practicum.filmorate.model.enums.ObjectType;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
@@ -39,12 +41,12 @@ public class UserService {
 
     public void makeFriends(Long userId, Long friendId) {
         userStorage.makeFriends(userId, friendId);
-        userStorage.addUserEvent(userId, "FRIEND", "ADD", friendId);
+        userStorage.addUserEvent(userId, ObjectType.FRIEND.name(), ActionType.ADD.name(), friendId);
     }
 
     public void deleteFriends(Long friendId, Long userId) {
         userStorage.deleteFriends(friendId, userId);
-        userStorage.addUserEvent(friendId, "FRIEND", "REMOVE", userId);
+        userStorage.addUserEvent(friendId, ObjectType.FRIEND.name(), ActionType.REMOVE.name(), userId);
     }
 
     public List getAll() {

@@ -46,11 +46,7 @@ public class ReviewController {
     }
 
     @GetMapping
-    public List<Review> get(@RequestParam(required = false) Integer filmId, @RequestParam(defaultValue  = TOP_LIMIT) Integer count) {
-        log.info("Запрос: GET get filmId={}, count={}", filmId, count);
-        if (filmId == null)
-            return reviewService.getReviews();
-        else
+    public List<Review> get(@RequestParam(defaultValue  = "0") Integer filmId, @RequestParam(defaultValue  = TOP_LIMIT) Integer count) {
             return reviewService.getReviewsByFilmId(filmId, count);
     }
 

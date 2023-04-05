@@ -56,7 +56,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.get(filmId).deleteLike(userId);
     }
 
-    public List<Film> getByDirectorId(Integer id) {
+    public List<Film> getByDirectorId(Integer id, String sortOrder) {
         return null;
     }
 

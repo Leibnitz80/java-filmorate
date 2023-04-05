@@ -380,7 +380,8 @@ public class FilmDbStorage implements FilmStorage {
                     "inner join Mpa r on r.mpa_id = f.mpa_id " +
                     "left join Likes l on l.film_id = f.film_id " +
                     "where dr.director_id = ? " +
-                    "order by count(l.user_id) desc";
+                    "group by f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name, dr.director_id " +
+                    "order by count(l.user_id)";
             }
 
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), id);

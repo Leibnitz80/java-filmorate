@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.ActionType;
+import ru.yandex.practicum.filmorate.model.enums.ObjectType;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
@@ -166,8 +168,8 @@ public class UserDbStorage implements UserStorage {
         Long eventId = rs.getLong("event_id");
         Long eventTimeStamp = rs.getLong("eventtimestamp");
         Long userId = rs.getLong("user_id");
-        String eventType = rs.getString("eventtype");
-        String operation = rs.getString("operation");
+        ObjectType eventType = ObjectType.valueOf(rs.getString("eventtype"));
+        ActionType operation = ActionType.valueOf(rs.getString("operation"));
         Long entityId = rs.getLong("entity_id");
 
         return new Event(eventId, eventTimeStamp, userId, eventType, operation,entityId);

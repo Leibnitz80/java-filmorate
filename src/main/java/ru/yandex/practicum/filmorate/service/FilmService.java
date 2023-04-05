@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.enums.ActionType;
+import ru.yandex.practicum.filmorate.model.enums.ObjectType;
 import ru.yandex.practicum.filmorate.model.enums.Search;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -47,7 +49,7 @@ public class FilmService {
     public void addLike(Integer filmId, Long userId) {
         userStorage.checkUserContains(userId);
         filmStorage.addLike(filmId, userId);
-        userStorage.addUserEvent(userId, "LIKE", "ADD", Long.valueOf(filmId));
+        userStorage.addUserEvent(userId, ObjectType.LIKE.name(), ActionType.ADD.name(), Long.valueOf(filmId));
     }
 
     public Film update(Film film) {
@@ -59,7 +61,7 @@ public class FilmService {
     public void deleteLike(Integer filmId, Long userId) {
         userStorage.checkUserContains(userId);
         filmStorage.deleteLike(filmId, userId);
-        userStorage.addUserEvent(userId, "LIKE", "REMOVE", Long.valueOf(filmId));
+        userStorage.addUserEvent(userId, ObjectType.LIKE.name(), ActionType.REMOVE.name(), Long.valueOf(filmId));
     }
 
     public List<Film> getByDirectorId(Integer id, String sortOrder) {
