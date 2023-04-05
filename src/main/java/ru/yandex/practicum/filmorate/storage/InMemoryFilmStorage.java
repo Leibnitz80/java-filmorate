@@ -98,9 +98,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public void checkFilmContains(Integer id) {
         if (!films.containsKey(id)) {
-            log.error(String.format("Фильм c id= %d не найден!", id));
-            throw new NotFoundException(
-                    String.format("Фильм c id= %d не найден!", id));
+            String message = String.format("Фильм c id= %d не найден!", id);
+            log.error(message);
+            throw new NotFoundException(message);
         }
     }
 }

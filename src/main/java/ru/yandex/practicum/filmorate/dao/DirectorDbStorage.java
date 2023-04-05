@@ -48,9 +48,9 @@ public class DirectorDbStorage implements DirectorStorage {
         if (count == 1) {
             return director;
         } else {
-            log.error(String.format("Режиссер c id= %d не найден!", director.getId()));
-            throw new NotFoundException(
-                    String.format("Режиссер c id= %d не найден!", director.getId()));
+            String message = String.format("Режиссер c id= %d не найден!", director.getId());
+            log.error(message);
+            throw new NotFoundException(message);
         }
     }
 
@@ -66,9 +66,10 @@ public class DirectorDbStorage implements DirectorStorage {
         if (rs.next()) {
             return new Director(rs.getInt(1), rs.getString(2));
         }
-        log.error(String.format("Режиссер c id= %d не найден!", id));
-        throw new NotFoundException(
-                String.format("Режиссер c id= %d не найден!", id));
+
+        String message = String.format("Режиссер c id= %d не найден!", id);
+        log.error(message);
+        throw new NotFoundException(message);
     }
 
     private Director makeDirector(ResultSet rs) throws SQLException {

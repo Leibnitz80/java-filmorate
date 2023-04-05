@@ -34,9 +34,9 @@ public class GenreDbStorage implements GenreStorage {
         String sql = "select count(1) as row_count from Genres where genre_id = ?;";
         int rowCount = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getInt("row_count"), id);
         if (rowCount == 0) {
-            log.error(String.format("Жанр c id= %d не найден!", id));
-            throw new NotFoundException(
-                    String.format("Жанр c id= %d не найден!", id));
+            String message = String.format("Жанр c id= %d не найден!", id);
+            log.error(message);
+            throw new NotFoundException(message);
         }
         sql = "select genre_id, name from Genres where genre_id = ?;";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeGenre(rs), id);

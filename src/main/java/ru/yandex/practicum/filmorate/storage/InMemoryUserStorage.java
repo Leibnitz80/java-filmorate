@@ -81,9 +81,9 @@ public class InMemoryUserStorage implements UserStorage {
     public void checkUserContains(Long id) {
         log.info("Валидация checkUserContains id={}", id);
         if (!users.containsKey(id)) {
-            log.error(String.format("Пользователь c id= %d не найден!", id));
-            throw new NotFoundException(
-                    String.format("Пользователь c id= %d не найден!", id));
+            String message = String.format("Пользователь c id= %d не найден!", id);
+            log.error(message);
+            throw new NotFoundException(message);
         }
     }
 

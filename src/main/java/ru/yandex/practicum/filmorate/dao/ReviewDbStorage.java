@@ -45,10 +45,10 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Review updateReview(Review review) {
         final String updateReviewSql = "update Reviews " +
-                "set content = ?, " +
-                "    isPositive = ?, " +
-                "    useful = ? " +
-                "where review_id = ?;";
+                                       "set content = ?, " +
+                                       "isPositive = ?, " +
+                                       "useful = ? " +
+                                       "where review_id = ?;";
         jdbcTemplate.update(
                 updateReviewSql,
                 review.getContent(),
@@ -69,30 +69,27 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review getReviewById(Long id) {
-        final String getReviewByIdSql =
-                "select review_id, content, isPositive, user_id, film_id, useful " +
-                "from Reviews where review_id = ?;";
+        final String getReviewByIdSql = "select review_id, content, isPositive, user_id, film_id, useful " +
+                                        "from Reviews where review_id = ?;";
         return jdbcTemplate.queryForObject(getReviewByIdSql, (rs, rowNum) -> makeReview(rs), id);
     }
 
     @Override
     public List<Review> getReviews() {
-        final String getReviewsSql =
-                "select review_id, content, isPositive, user_id, film_id, useful " +
-                "from Reviews " +
-                "order by useful desc;";
+        final String getReviewsSql = "select review_id, content, isPositive, user_id, film_id, useful " +
+                                     "from Reviews " +
+                                     "order by useful desc;";
         List<Review> reviews = jdbcTemplate.query(getReviewsSql, (rs, rowNum) -> makeReview(rs));
         return Collections.unmodifiableList(reviews);
     }
 
     @Override
     public List getReviewsByFilmId(int filmId, int count) {
-        final String getReviewsByFilmIdSql =
-                "select review_id, content, isPositive, user_id, film_id, useful " +
-                "from Reviews " +
-                "where film_id = ? " +
-                "order by useful desc, review_id " +
-                "limit " + count;
+        final String getReviewsByFilmIdSql = "select review_id, content, isPositive, user_id, film_id, useful " +
+                                             "from Reviews " +
+                                             "where film_id = ? " +
+                                             "order by useful desc, review_id " +
+                                             "limit " + count;
         List<Review> reviews = jdbcTemplate.query(getReviewsByFilmIdSql, (rs, rowNum) -> makeReview(rs), filmId);
         return Collections.unmodifiableList(reviews);
     }

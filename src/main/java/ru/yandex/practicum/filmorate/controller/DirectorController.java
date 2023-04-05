@@ -18,31 +18,31 @@ public class DirectorController {
 
     @GetMapping("{id}")
     public Director getDirectorById(@PathVariable Integer id) {
-        log.info("Запрос: GET by id");
+        log.info("Запрос: GET getDirectorById {}", id);
         return directorService.getDirectorById(id);
     }
 
     @DeleteMapping("{id}")
     public void deleteDirector(@PathVariable Integer id) {
-        log.info("Запрос: DELETE {}", id);
+        log.info("Запрос: DELETE {} deleteDirector", id);
         directorService.deleteDirector(id);
     }
 
     @GetMapping()
     public List<Director> getDirectors() {
-        log.info("Запрос: GET");
+        log.info("Запрос: GET getDirectors");
         return directorService.getDirectors();
     }
 
     @PostMapping
     public Director addDirector(@Valid @RequestBody Director director) {
-        log.info("Запрос: POST {}", director);
+        log.info("Запрос: POST addDirector {}", director);
         return directorService.addDirector(director);
     }
 
     @PutMapping
     public Director updateDirector(@Valid @RequestBody Director director) {
-        log.info("Запрос: PUT {}", director);
+        log.info("Запрос: PUT {} updateDirector", director);
         return directorService.updateDirector(director);
     }
 }

@@ -135,9 +135,9 @@ public class UserDbStorage implements UserStorage {
         String sql = "select count(1) as row_count from Users where user_id = ?;";
         Long rowCount = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getLong("row_count"), id);
         if (rowCount == 0) {
-            log.error(String.format("Пользователь c id= %d не найден!", id));
-            throw new NotFoundException(
-                    String.format("Пользователь c id= %d не найден!", id));
+            String message = String.format("Пользователь c id= %d не найден!", id);
+            log.error(message);
+            throw new NotFoundException(message);
         }
     }
 
