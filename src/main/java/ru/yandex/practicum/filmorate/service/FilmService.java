@@ -73,18 +73,21 @@ public class FilmService {
     public List<Film> getByDirectorId(Integer id, String condition) {
         List<Film> result = new ArrayList<>();
 
-        if (condition.equals("year")) {
-            result = filmStorage.getByDirectorId(id).stream()
-                    .sorted(COMP_BY_YEAR)
-                    .collect(Collectors.toList());
-        } else if (condition.equals("likes")) {
-            result = filmStorage.getByDirectorId(id);
+        switch (condition) {
+            case "year":
+                result = filmStorage.getByDirectorId(id).stream()
+                        .sorted(COMP_BY_YEAR)
+                        .collect(Collectors.toList());
+                break;
+            case "likes":
+                result = filmStorage.getByDirectorId(id);
+                break;
         }
 
         if (result == null || result.isEmpty()) {
-            log.error("ошибка: нет такого режиссера или фильмов по ИД режиссера " + id);
-            throw new NotFoundException(
-                    String.format("ошибка: нет такого режиссера или фильмов по id режиссера %d", id));
+            String message = "Ошибка: нет такого режиссера или фильмов по ИД режиссера " + id;
+            log.error(message);
+            throw new NotFoundException(message);
         }
 
         return result;
