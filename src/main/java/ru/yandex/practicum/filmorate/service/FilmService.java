@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -21,13 +20,6 @@ import java.util.stream.Collectors;
 public class FilmService {
     private static final int MAX_LENGTH = 200;
     private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
-    private static final Comparator<Film> COMP_BY_LIKES = (p0, p1) -> {
-        return p1.getLikesCount() - p0.getLikesCount();
-    };
-
-    private static final Comparator<Film> COMP_BY_YEAR = (p0, p1) -> {
-        return p0.getReleaseDate().compareTo(p1.getReleaseDate());
-    };
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
@@ -69,21 +61,13 @@ public class FilmService {
         userStorage.addUserEvent(userId, "LIKE", "REMOVE", Long.valueOf(filmId));
     }
 
-    public List<Film> getByDirectorId(Integer id, String condition) {
-        List<Film> result = new ArrayList<>();
-
-        if (condition.equals("year")) {
-            result = filmStorage.getByDirectorId(id).stream()
-                    .sorted(COMP_BY_YEAR)
-                    .collect(Collectors.toList());
-        } else if (condition.equals("likes")) {
-            result = filmStorage.getByDirectorId(id);
-        }
+    public List<Film> getByDirectorId(Integer id, String sortOrder) {
+        List<Film> result = filmStorage.getByDirectorId(id,sortOrder);
 
         if (result == null || result.isEmpty()) {
-            log.error("ошибка: нет такого режиссера или фильмов по ИД режиссера " + id);
+            log.error("Ошибка: нет такого режиссера или фильмов с id режиссера " + id);
             throw new NotFoundException(
-                    String.format("ошибка: нет такого режиссера или фильмов по id режиссера %d", id));
+                    String.format("ошибка: нет такого режиссера или фильмов с id режиссера %d", id));
         }
 
         return result;

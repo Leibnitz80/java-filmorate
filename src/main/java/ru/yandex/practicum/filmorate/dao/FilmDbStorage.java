@@ -363,13 +363,26 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getByDirectorId(Integer id) {
-        String sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name as mpa_name, dr.director_id " +
-                "from Films f " +
-                "inner join directors_relation dr on dr.film_id = f.film_id " +
-                "inner join Mpa r on r.mpa_id = f.mpa_id " +
-                "where dr.director_id = ? " +
-                "order by f.film_id;";
+    public List<Film> getByDirectorId(Integer id, String sortOrder) {
+        String sql;
+        if (sortOrder.equals("year")) {
+            sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name as mpa_name, dr.director_id " +
+                    "from Films f " +
+                    "inner join directors_relation dr on dr.film_id = f.film_id " +
+                    "inner join Mpa r on r.mpa_id = f.mpa_id " +
+                    "where dr.director_id = ? " +
+                    "order by f.releaseDate";
+        }
+        else {
+            sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name as mpa_name, dr.director_id " +
+                    "from Films f " +
+                    "inner join directors_relation dr on dr.film_id = f.film_id " +
+                    "inner join Mpa r on r.mpa_id = f.mpa_id " +
+                    "left join Likes l on l.film_id = f.film_id " +
+                    "where dr.director_id = ? " +
+                    "order by count(l.user_id) desc";
+            }
+
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), id);
         sql = "select distinct gr.film_id, g.genre_id, g.name " +
                 "from Genres_Relation gr " +
