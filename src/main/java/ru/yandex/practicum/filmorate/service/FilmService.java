@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.enums.Search;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -72,18 +73,21 @@ public class FilmService {
     public List<Film> getByDirectorId(Integer id, String condition) {
         List<Film> result = new ArrayList<>();
 
-        if (condition.equals("year")) {
-            result = filmStorage.getByDirectorId(id).stream()
-                    .sorted(COMP_BY_YEAR)
-                    .collect(Collectors.toList());
-        } else if (condition.equals("likes")) {
-            result = filmStorage.getByDirectorId(id);
+        switch (condition) {
+            case "year":
+                result = filmStorage.getByDirectorId(id).stream()
+                        .sorted(COMP_BY_YEAR)
+                        .collect(Collectors.toList());
+                break;
+            case "likes":
+                result = filmStorage.getByDirectorId(id);
+                break;
         }
 
         if (result == null || result.isEmpty()) {
-            log.error("ошибка: нет такого режиссера или фильмов по ИД режиссера " + id);
-            throw new NotFoundException(
-                    String.format("ошибка: нет такого режиссера или фильмов по id режиссера %d", id));
+            String message = "Ошибка: нет такого режиссера или фильмов по ИД режиссера " + id;
+            log.error(message);
+            throw new NotFoundException(message);
         }
 
         return result;
@@ -101,32 +105,33 @@ public class FilmService {
         return filmStorage.getRecommendations(id);
     }
 
-    public List<Film> getSearchFilms(String query, List<String> by) {
-        // Проверка на то, что @RequestParam by передан корректно,
-        // иначе ValidationException.
-        if ((by.size() > 2) || (by.size() == 2 && !(by.contains("title") && by.contains("director")))
-                || (by.size() == 1 && !(by.contains("title") || by.contains("director")))) {
-            throw new ValidationException("Неправильный @RequestParam: " + by);
-        }
-
+    public List<Film> getSearchFilms(String query, String by) {
         List<Film> searchFilms = new ArrayList<>();
+        String[] splitBy = by.split(",");
 
-        switch (by.size()) {
-            case 1:
-                if (by.contains("title")) {
-                    searchFilms = filmStorage.getFilmsByTitle(query);
-                }
+        try {
+            switch (splitBy.length) {
+                case 1:
+                    Search search = Search.valueOf(by.toUpperCase());
 
-                if (by.contains("director")) {
-                    searchFilms = filmStorage.getFilmsByDirector(query);
-                }
-                break;
+                    if (search.equals(Search.TITLE)) {
+                        searchFilms = filmStorage.getFilmsByTitle(query);
+                    } else if (search.equals(Search.DIRECTOR)) {
+                        searchFilms = filmStorage.getFilmsByDirector(query);
+                    }
+                    break;
+                case 2:
+                    for (String s : splitBy) {
+                        Search.valueOf(s.toUpperCase());
+                    }
 
-            case 2:
-                if (by.contains("title") && by.contains("director")) {
                     searchFilms = filmStorage.getFilmsAnywayByTitle(query);
-                }
-                break;
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Неправильный @RequestParam: " + by);
         }
 
         return searchFilms;
