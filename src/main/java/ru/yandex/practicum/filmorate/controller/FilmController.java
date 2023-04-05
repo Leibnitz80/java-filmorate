@@ -36,7 +36,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List getTopFilms(@RequestParam(required = false, defaultValue = TOP_LIMIT, name = "count") Integer count,
+    public List getTopFilms(@RequestParam(defaultValue = TOP_LIMIT, name = "count") Integer count,
                             @RequestParam(required = false, name = "genreId") Integer genreId,
                             @RequestParam(required = false, name = "year") Integer year) {
         log.info("Запрос: GET getTopFilms");
@@ -96,7 +96,7 @@ public class FilmController {
     @GetMapping("director/{directorId}")
     public Collection<Film> getFilmsByDirector(
             @PathVariable Integer directorId,
-            @RequestParam(required = false, defaultValue = "year") String sortBy) {
+            @RequestParam(defaultValue = "year") String sortBy) {
         log.info("Запрос: getFilmsByDirector with condition");
         return filmService.getByDirectorId(directorId, sortBy);
     }
