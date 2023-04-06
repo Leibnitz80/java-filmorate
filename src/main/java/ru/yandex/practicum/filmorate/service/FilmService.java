@@ -81,7 +81,7 @@ public class FilmService {
             throw new NotFoundException(message);
         }
 
-        log.info("Запрос для Film: GET getFilmsByDirector {} {} }обработан успешно", id, condition);
+        log.info("Запрос для Film: GET getFilmsByDirector {} {} }обработан успешно", id, sortOrder);
         return result;
     }
 
