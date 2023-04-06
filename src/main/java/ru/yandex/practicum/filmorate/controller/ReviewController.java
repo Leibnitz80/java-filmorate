@@ -19,58 +19,55 @@ public class ReviewController {
 
     @GetMapping("/{id}")
     public Review getById(@PathVariable("id") Long id) {
-        log.info("Запрос: GET by id");
+        log.info("Запрос для Review: GET getById {}", id);
         return reviewService.getReviewById(id);
     }
 
     @PostMapping
     public Review add(@Valid @RequestBody Review review) {
-        log.info("Запрос: POST {}", review);
-        review = reviewService.addReview(review);
-        log.info("Запрос: POST обработан успешно");
-        return review;
+        log.info("Запрос для Review: POST add {}", review);
+        return reviewService.addReview(review);
     }
 
     @PutMapping
     public Review update(@Valid @RequestBody Review review) {
-        log.info("Запрос: PUT update {}", review);
-        review = reviewService.updateReview(review);
-        log.info("Запрос: PUT update обработан успешно");
-        return review;
+        log.info("Запрос для Review: PUT update {}", review);
+        return reviewService.updateReview(review);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id) {
-        log.info("Запрос: DELETE by id");
+        log.info("Запрос для Review: DELETE delete {}", id);
         reviewService.deleteReview(id);
     }
 
     @GetMapping
     public List<Review> get(@RequestParam(defaultValue  = "0") Integer filmId, @RequestParam(defaultValue  = TOP_LIMIT) Integer count) {
-            return reviewService.getReviewsByFilmId(filmId, count);
+        log.info("Запрос для Review: GET get {} {}", filmId, count);
+        return reviewService.getReviewsByFilmId(filmId, count);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
-        log.info("Запрос: PUT addLike id={}, userId={}", id, userId);
+        log.info("Запрос для Review: PUT addLike {} {}", id, userId);
         reviewService.addLike(id, userId);
     }
 
     @PutMapping("/{id}/dislike/{userId}")
     public void addDislike(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
-        log.info("Запрос: PUT addDislike id={}, userId={}", id, userId);
+        log.info("Запрос для Review: PUT addDislike {} {}", id, userId);
         reviewService.addDislike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
-        log.info("Запрос: DELETE removeLike id={}, userId={}", id, userId);
+        log.info("Запрос для Review: DELETE removeLike {} {}", id, userId);
         reviewService.removeLike(id, userId);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
     public void removeDislike(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
-        log.info("Запрос: DELETE removeDislike id={}, userId={}", id, userId);
+        log.info("Запрос для Review: DELETE removeDislike {} {}", id, userId);
         reviewService.removeDislike(id, userId);
     }
 }

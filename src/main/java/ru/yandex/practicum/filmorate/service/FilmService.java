@@ -28,20 +28,27 @@ public class FilmService {
     private final UserService userService;
 
     public List<Film> getAll() {
-        return filmStorage.getFilms();
+        List<Film> films = filmStorage.getFilms();
+        log.info("Запрос для Film: GET getAll обработан успешно");
+        return films;
     }
 
     public Film getById(Integer id) {
-        return filmStorage.getFilmById(id);
+        Film film = filmStorage.getFilmById(id);
+        log.info("Запрос для Film: GET getById {} обработан успешно", id);
+        return film;
     }
 
     public List<Film> getTopFilms(Integer count, Integer genreId, Integer year) {
-        return filmStorage.getTopFilms(count, genreId, year);
+        List<Film> films = filmStorage.getTopFilms(count, genreId, year);
+        log.info("Запрос для Film: GET getTopFilms {} {} {} обработан успешно", count, genreId, year);
+        return films;
     }
 
     public Film add(Film film) {
         isValid(film);
         film = filmStorage.addFilm(film);
+        log.info("Запрос для Film: POST add {} обработан успешно", film);
         return film;
     }
 
@@ -49,6 +56,7 @@ public class FilmService {
         userStorage.checkUserContains(userId);
         filmStorage.addLike(filmId, userId);
         userStorage.addUserEvent(userId, ObjectType.LIKE.name(), ActionType.ADD.name(), Long.valueOf(filmId));
+        log.info("Запрос для Film: PUT addLike {} {} обработан успешно", filmId, userId);
     }
 
     public Film update(Film film) {
@@ -61,30 +69,36 @@ public class FilmService {
         userStorage.checkUserContains(userId);
         filmStorage.deleteLike(filmId, userId);
         userStorage.addUserEvent(userId, ObjectType.LIKE.name(), ActionType.REMOVE.name(), Long.valueOf(filmId));
+        log.info("Запрос для Film: DELETE deleteLike {} {} обработан успешно", filmId, userId);
     }
 
     public List<Film> getByDirectorId(Integer id, String sortOrder) {
         List<Film> result = filmStorage.getByDirectorId(id,sortOrder);
 
         if (result == null || result.isEmpty()) {
-            log.error("Ошибка: нет такого режиссера или фильмов с id режиссера " + id);
-            throw new NotFoundException(
-                    String.format("ошибка: нет такого режиссера или фильмов с id режиссера %d", id));
+            String message = String.format("ошибка: нет такого режиссера или фильмов с id режиссера %d", id);
+            log.error(message);
+            throw new NotFoundException(message);
         }
 
+        log.info("Запрос для Film: GET getFilmsByDirector {} {} }обработан успешно", id, sortOrder);
         return result;
     }
 
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         userStorage.checkUserContains(userId);
         userStorage.checkUserContains(friendId);
-        return filmStorage.getCommonFilms(userId, friendId);
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+        log.info("Запрос для Film: GET getCommonFilms {} {} обработан успешно", userId, friendId);
+        return films;
     }
 
 
     public List<Film> getRecommendations(Long id) {
         userService.getById(id);
-        return filmStorage.getRecommendations(id);
+        List<Film> films = filmStorage.getRecommendations(id);
+        log.info("Запрос для User: GET getRecommendations {} обработан успешно", id);
+        return films;
     }
 
     public List<Film> getSearchFilms(String query, String by) {
@@ -116,37 +130,33 @@ public class FilmService {
             throw new ValidationException("Неправильный @RequestParam: " + by);
         }
 
+        log.info("Запрос для Film: GET getSearchFilms {} {} обработан успешно", query, by);
         return searchFilms;
     }
 
     public void deleteFilmById(Integer id) {
         filmStorage.deleteFilm(id);
+        log.info("Запрос для Film: DELETE deleteFilmById {} обработан успешно", id);
     }
 
     public void isValid(Film film) { // используется в тестах, поэтому не может быть private
         if (film.getName().isBlank()) {
-            log.info("Ошибка валидации: Пустое наименование фильма");
             throw new ValidationException("Пустое наименование фильма");
         }
         if (film.getDescription().length() > MAX_LENGTH) {
-            log.info("Ошибка валидации: Описание более 200 символов");
             throw new ValidationException("Описание более 200 символов");
         }
         if (film.getReleaseDate().isBefore(MIN_DATE)) {
-            log.info("Ошибка валидации: Дата релиза не должна быть раньше 28/12/1895");
             throw new ValidationException("Дата релиза не должна быть раньше 28/12/1895");
         }
         if (film.getDuration() <= 0) {
-            log.info("Ошибка валидации: Продолжительность фильма должна быть больше нуля");
             throw new ValidationException("Продолжительность фильма должна быть больше нуля");
         }
         if (film.getMpa().getId() < 1) {
-            log.info("Ошибка валидации: mpa_id должен быть больше 0");
             throw new ValidationException("mpa_id должен быть больше 0");
         }
         if (!film.getGenres().isEmpty()) {
             if (film.getGenres().stream().noneMatch(genre -> genre.getId() > 0)) {
-                log.info("Ошибка валидации: genre_id должен быть больше 0");
                 throw new ValidationException("genre_id должен быть больше 0");
             }
         }

@@ -25,59 +25,73 @@ public class UserService {
 
     public User add(User user) {
         isValid(user);
-        return userStorage.addUser(user);
+        user = userStorage.addUser(user);
+        log.info("Запрос для User: POST add {} обработан успешно", user);
+        return user;
     }
 
     public User update(User user) {
         isValid(user);
         userStorage.updateUser(user);
+        log.info("Запрос для User: PUT update {} обработан успешно", user);
         return user;
     }
 
     public void deleteUserById(Long id) {
         userStorage.deleteUser(id);
         userStorage.deleteUserEvents(id);
+        log.info("Запрос для User: DELETE deleteUserById {} обработан успешно", id);
     }
 
     public void makeFriends(Long userId, Long friendId) {
         userStorage.makeFriends(userId, friendId);
         userStorage.addUserEvent(userId, ObjectType.FRIEND.name(), ActionType.ADD.name(), friendId);
+        log.info("Запрос для User: PUT makeFriends {} {} обработан успешно", userId, friendId);
     }
 
     public void deleteFriends(Long friendId, Long userId) {
         userStorage.deleteFriends(friendId, userId);
         userStorage.addUserEvent(friendId, ObjectType.FRIEND.name(), ActionType.REMOVE.name(), userId);
+        log.info("Запрос для User: DELETE deleteFriends {} {} обработан успешно", friendId, userId);
     }
 
     public List getAll() {
-        return userStorage.getUsers();
+        List<User> users = userStorage.getUsers();
+        log.info("Запрос для User: GET getAll обработан успешно");
+        return users;
     }
 
     public User getById(Long id) {
-        return userStorage.getUserById(id);
+        User user = userStorage.getUserById(id);
+        log.info("Запрос для User: GET getById {} обработан успешно", id);
+        return user;
     }
 
     public List<User> getAllFriends(Long id) {
         userStorage.checkUserContains(id);
-        return userStorage.getAllFriends(id);
+        List<User> users = userStorage.getAllFriends(id);
+        log.info("Запрос для User: GET getAllFriends {} обработан успешно", id);
+        return users;
     }
 
-    public List getCommonFriends(Long id1, Long id2) {
-        return userStorage.getCommonFriends(id1, id2);
+    public List<User> getCommonFriends(Long id1, Long id2) {
+        List<User> users = userStorage.getCommonFriends(id1, id2);
+        log.info("Запрос для User: GET getCommonFriends {} {} обработан успешно", id1, id2);
+        return users;
     }
 
     public List<Event> getUserEvents(Long id) {
         userStorage.checkUserContains(id);
-        return userStorage.getUserEvents(id);
+        List<Event> events = userStorage.getUserEvents(id);
+        log.info("Запрос для User: GET getUserEvents {} обработан успешно", id);
+        return events;
     }
 
     public void isValid(User user) {
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.error("Ошибка валидации: День рождения не должен быть в будущем");
             throw new ValidationException("День рождения не должен быть в будущем");
         }
         if (user.getLogin().contains(" ")) {
-            log.error("Ошибка валидации: В логине не должно быть пробелов");
             throw new ValidationException("В логине не должно быть пробелов");
         }
         if (user.getName() == null || user.getName().isBlank()) {
