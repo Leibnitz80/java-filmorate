@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.ActionType;
+import ru.yandex.practicum.filmorate.model.enums.ObjectType;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
@@ -28,7 +30,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List getUsers() {
+    public List<User> getUsers() {
         String sql = "select user_id, login, name, email, birthday from Users;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     }
@@ -87,7 +89,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List getAllFriends(Long id) {
+    public List<User> getAllFriends(Long id) {
         String sql = "select u.user_id, u.login, u.name, u.email, u.birthday " +
                      "from Friendship f " +
                      "inner join Users u on u.user_id = f.friend_id " +
@@ -97,7 +99,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List getCommonFriends(Long id1, Long id2) {
+    public List<User> getCommonFriends(Long id1, Long id2) {
         String sql = "select u.user_id, u.login, u.name, u.email, u.birthday " +
                      "from Friendship f1 " +
                      "inner join Friendship f2 on f2.friend_id = f1.friend_id " +
@@ -108,7 +110,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List getUserEvents(Long userId) {
+    public List<Event> getUserEvents(Long userId) {
         String sql = "select event_id, eventtimestamp, user_id, eventtype, operation, entity_id " +
                 "from Events " +
                 "where user_id = ? " +
@@ -166,8 +168,8 @@ public class UserDbStorage implements UserStorage {
         Long eventId = rs.getLong("event_id");
         Long eventTimeStamp = rs.getLong("eventtimestamp");
         Long userId = rs.getLong("user_id");
-        String eventType = rs.getString("eventtype");
-        String operation = rs.getString("operation");
+        ObjectType eventType = ObjectType.valueOf(rs.getString("eventtype"));
+        ActionType operation = ActionType.valueOf(rs.getString("operation"));
         Long entityId = rs.getLong("entity_id");
 
         return new Event(eventId, eventTimeStamp, userId, eventType, operation,entityId);

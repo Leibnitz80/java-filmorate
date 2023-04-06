@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.enums.ActionType;
+import ru.yandex.practicum.filmorate.model.enums.ObjectType;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -23,7 +25,10 @@ public class ReviewService {
     }
 
     public List<Review> getReviewsByFilmId(int filmId, int count) {
-        return reviewStorage.getReviewsByFilmId(filmId, count);
+        if (filmId == 0)
+            return getReviews();
+        else
+            return reviewStorage.getReviewsByFilmId(filmId, count);
     }
 
     public Review getReviewById(Long id) {
@@ -35,7 +40,7 @@ public class ReviewService {
         filmStorage.checkFilmContains(review.getFilmId());
         userStorage.checkUserContains(review.getUserId());
         Review newReview = reviewStorage.addReview(review);
-        userStorage.addUserEvent(newReview.getUserId(), "REVIEW", "ADD", newReview.getReviewId());
+        userStorage.addUserEvent(newReview.getUserId(), ObjectType.REVIEW.name(), ActionType.ADD.name(), newReview.getReviewId());
         return newReview;
     }
 
@@ -44,41 +49,41 @@ public class ReviewService {
         filmStorage.checkFilmContains(review.getFilmId());
         userStorage.checkUserContains(review.getUserId());
         Review updateReview = reviewStorage.updateReview(review);
-        userStorage.addUserEvent(updateReview.getUserId(), "REVIEW", "UPDATE", updateReview.getReviewId());
+        userStorage.addUserEvent(updateReview.getUserId(), ObjectType.REVIEW.name(), ActionType.UPDATE.name(), updateReview.getReviewId());
         return updateReview;
     }
 
     public void deleteReview(Long id) {
-        Review deleteReview = reviewStorage.getReviewById(id);
         reviewStorage.checkReviewContains(id);
-        userStorage.addUserEvent(deleteReview.getUserId(), "REVIEW", "REMOVE", id);
+        Review deleteReview = reviewStorage.getReviewById(id);
+        userStorage.addUserEvent(deleteReview.getUserId(), ObjectType.REVIEW.name(), ActionType.REMOVE.name(), id);
         reviewStorage.deleteReview(id);
     }
 
     public void addLike(Long id, Long userId) {
-        final Review review = getReviewById(id);
         userStorage.checkUserContains(userId);
+        final Review review = getReviewById(id);
         review.addLike(userId);
         reviewStorage.updateReview(review);
     }
 
     public void addDislike(Long id, Long userId) {
-        final Review review = getReviewById(id);
         userStorage.checkUserContains(userId);
+        final Review review = getReviewById(id);
         review.addDislike(userId);
         reviewStorage.updateReview(review);
     }
 
     public void removeLike(Long id, Long userId) {
-        final Review review = getReviewById(id);
         userStorage.checkUserContains(userId);
+        final Review review = getReviewById(id);
         review.removeLike(userId);
         reviewStorage.updateReview(review);
     }
 
     public void removeDislike(Long id, Long userId) {
-        final Review review = getReviewById(id);
         userStorage.checkUserContains(userId);
+        final Review review = getReviewById(id);
         review.removeDislike(userId);
         reviewStorage.updateReview(review);
     }

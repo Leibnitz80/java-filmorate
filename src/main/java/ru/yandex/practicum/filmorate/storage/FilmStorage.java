@@ -19,7 +19,7 @@ public interface FilmStorage {
 
     void deleteLike(Integer filmId, Long userId);
 
-    List<Film> getByDirectorId(Integer id);
+    List<Film> getByDirectorId(Integer id, String sortOrder);
 
     List getCommonFilms(Long userId, Long friendId);
 
