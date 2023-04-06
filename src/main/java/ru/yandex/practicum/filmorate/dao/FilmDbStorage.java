@@ -372,8 +372,7 @@ public class FilmDbStorage implements FilmStorage {
                     "inner join Mpa r on r.mpa_id = f.mpa_id " +
                     "where dr.director_id = ? " +
                     "order by f.releaseDate";
-        }
-        else {
+        } else {
             sql = "select f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name as mpa_name, dr.director_id " +
                     "from Films f " +
                     "inner join directors_relation dr on dr.film_id = f.film_id " +
@@ -382,7 +381,7 @@ public class FilmDbStorage implements FilmStorage {
                     "where dr.director_id = ? " +
                     "group by f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name, dr.director_id " +
                     "order by count(l.user_id)";
-            }
+                }
 
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), id);
         sql = "select distinct gr.film_id, g.genre_id, g.name " +
