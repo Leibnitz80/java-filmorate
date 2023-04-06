@@ -42,12 +42,9 @@ public class ReviewController {
     }
 
     @GetMapping
-    public List<Review> get(@RequestParam(required = false) Integer filmId, @RequestParam(defaultValue  = TOP_LIMIT) Integer count) {
+    public List<Review> get(@RequestParam(defaultValue  = "0") Integer filmId, @RequestParam(defaultValue  = TOP_LIMIT) Integer count) {
         log.info("Запрос для Review: GET get {} {}", filmId, count);
-        if (filmId == null)
-            return reviewService.getReviews();
-        else
-            return reviewService.getReviewsByFilmId(filmId, count);
+        return reviewService.getReviewsByFilmId(filmId, count);
     }
 
     @PutMapping("/{id}/like/{userId}")

@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.enums.ActionType;
+import ru.yandex.practicum.filmorate.model.enums.ObjectType;
 
 import javax.validation.constraints.NotBlank;
 
@@ -14,9 +16,9 @@ public class Event {
     @NotBlank
     private Long userId;
     @NotBlank
-    private String eventType;
+    private ObjectType eventType;
     @NotBlank
-    private String operation;
+    private ActionType operation;
     @NotBlank
     private Long entityId;
 }

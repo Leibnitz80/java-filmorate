@@ -6,15 +6,15 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.enums.ActionType;
+import ru.yandex.practicum.filmorate.model.enums.ObjectType;
 import ru.yandex.practicum.filmorate.model.enums.Search;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,13 +22,6 @@ import java.util.stream.Collectors;
 public class FilmService {
     private static final int MAX_LENGTH = 200;
     private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
-    private static final Comparator<Film> COMP_BY_LIKES = (p0, p1) -> {
-        return p1.getLikesCount() - p0.getLikesCount();
-    };
-
-    private static final Comparator<Film> COMP_BY_YEAR = (p0, p1) -> {
-        return p0.getReleaseDate().compareTo(p1.getReleaseDate());
-    };
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
@@ -62,40 +55,28 @@ public class FilmService {
     public void addLike(Integer filmId, Long userId) {
         userStorage.checkUserContains(userId);
         filmStorage.addLike(filmId, userId);
-        userStorage.addUserEvent(userId, "LIKE", "ADD", Long.valueOf(filmId));
+        userStorage.addUserEvent(userId, ObjectType.LIKE.name(), ActionType.ADD.name(), Long.valueOf(filmId));
         log.info("Запрос для Film: PUT addLike {} {} обработан успешно", filmId, userId);
     }
 
     public Film update(Film film) {
         isValid(film);
         film = filmStorage.updateFilm(film);
-        log.info("Запрос для Film: PUT update {} обработан успешно", film);
         return film;
     }
 
     public void deleteLike(Integer filmId, Long userId) {
         userStorage.checkUserContains(userId);
         filmStorage.deleteLike(filmId, userId);
-        userStorage.addUserEvent(userId, "LIKE", "REMOVE", Long.valueOf(filmId));
+        userStorage.addUserEvent(userId, ObjectType.LIKE.name(), ActionType.REMOVE.name(), Long.valueOf(filmId));
         log.info("Запрос для Film: DELETE deleteLike {} {} обработан успешно", filmId, userId);
     }
 
-    public List<Film> getByDirectorId(Integer id, String condition) {
-        List<Film> result = new ArrayList<>();
-
-        switch (condition) {
-            case "year":
-                result = filmStorage.getByDirectorId(id).stream()
-                        .sorted(COMP_BY_YEAR)
-                        .collect(Collectors.toList());
-                break;
-            case "likes":
-                result = filmStorage.getByDirectorId(id);
-                break;
-        }
+    public List<Film> getByDirectorId(Integer id, String sortOrder) {
+        List<Film> result = filmStorage.getByDirectorId(id,sortOrder);
 
         if (result == null || result.isEmpty()) {
-            String message = "Ошибка: нет такого режиссера или фильмов по ИД режиссера " + id;
+            String message = String.format("ошибка: нет такого режиссера или фильмов с id режиссера %d", id);
             log.error(message);
             throw new NotFoundException(message);
         }
