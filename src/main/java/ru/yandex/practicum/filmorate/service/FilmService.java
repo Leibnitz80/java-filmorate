@@ -77,11 +77,10 @@ public class FilmService {
 
         if (result == null || result.isEmpty()) {
             String message = String.format("ошибка: нет такого режиссера или фильмов с id режиссера %d", id);
-            log.error(message);
             throw new NotFoundException(message);
         }
 
-        log.info("Запрос для Film: GET getFilmsByDirector {} {} }обработан успешно", id, sortOrder);
+        log.info("Запрос для Film: GET getFilmsByDirector {} {} обработан успешно", id, sortOrder);
         return result;
     }
 

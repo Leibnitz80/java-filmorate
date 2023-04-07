@@ -25,12 +25,12 @@ public class DirectorService {
     }
 
     public Director updateDirector(Director director) {
-        log.info("Запрос для Director: PUT {} updateDirector обработан успешно", director);
+        log.info("Запрос для Director: PUT updateDirector {}  обработан успешно", director);
         return directorStorage.updateDirector(director);
     }
 
     public void deleteDirector(Integer id) {
-        log.info("Запрос для Director: DELETE {} deleteDirector обработан успешно", id);
+        log.info("Запрос для Director: DELETE deleteDirector {} обработан успешно", id);
         directorStorage.deleteDirector(id);
     }
 

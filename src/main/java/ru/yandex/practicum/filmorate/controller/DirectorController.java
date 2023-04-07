@@ -24,7 +24,7 @@ public class DirectorController {
 
     @DeleteMapping("{id}")
     public void deleteDirector(@PathVariable Integer id) {
-        log.info("Запрос для Director: DELETE {} deleteDirector", id);
+        log.info("Запрос для Director: DELETE deleteDirector {} ", id);
         directorService.deleteDirector(id);
     }
 
@@ -42,7 +42,7 @@ public class DirectorController {
 
     @PutMapping
     public Director updateDirector(@Valid @RequestBody Director director) {
-        log.info("Запрос для Director: PUT {} updateDirector", director);
+        log.info("Запрос для Director: PUT updateDirector {}", director);
         return directorService.updateDirector(director);
     }
 }
