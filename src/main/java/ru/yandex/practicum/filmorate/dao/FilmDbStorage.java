@@ -387,7 +387,7 @@ public class FilmDbStorage implements FilmStorage {
                       "order by count(l.user_id)";
                 break;
             default:
-                throw new ValidationException("В @RequestParam для запроса getByDirectorId передан неправильный аргумент");
+                throw new ValidationException("В @RequestParam для запроса getByDirectorId передан неправильный аргумент: " + sortOrder);
         }
 
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), id);
