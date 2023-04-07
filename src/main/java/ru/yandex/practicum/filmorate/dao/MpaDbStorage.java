@@ -18,7 +18,7 @@ public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public MpaDbStorage (JdbcTemplate jdbcTemplate) {
+    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -34,9 +34,9 @@ public class MpaDbStorage implements MpaStorage {
         String sql = "select count(1) as row_count from Mpa where mpa_id = ?;";
         int rowCount = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getInt("row_count"), id);
         if (rowCount == 0) {
-            log.error(String.format("Рейтинг c id= %d не найден!", id));
-            throw new NotFoundException(
-                    String.format("Рейтинг c id= %d не найден!", id));
+            String message = String.format("Рейтинг c id= %d не найден!", id);
+            log.error(message);
+            throw new NotFoundException(message);
         }
         sql = "select mpa_id, name from Mpa where mpa_id = ?;";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeMpa(rs), id);

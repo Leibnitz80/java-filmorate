@@ -1,11 +1,15 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -27,14 +31,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film addFilm(Film film) {
         film.setId(++currId);
-        films.put(film.getId(),film);
+        films.put(film.getId(), film);
         return film;
     }
 
     @Override
     public Film updateFilm(Film film) {
         checkFilmContains(film.getId());
-        films.put(film.getId(),film);
+        films.put(film.getId(), film);
         log.info("Запрос: PUT обработан успешно");
         return film;
     }
@@ -55,11 +59,51 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.get(filmId).deleteLike(userId);
     }
 
+    public List<Film> getByDirectorId(Integer id, String sortOrder) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        List<Film> userFilms =
+                films.values().stream().filter(f -> f.getLikes().contains(userId)).collect(Collectors.toList());
+        List<Film> friendFilms =
+                films.values().stream().filter(f -> f.getLikes().contains(friendId)).collect(Collectors.toList());
+        return userFilms.stream()
+                .filter(friendFilms::contains)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Film> getRecommendations(Long userId) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public List<Film> getFilmsByTitle(String query) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public List<Film> getFilmsByDirector(String query) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public List<Film> getFilmsAnywayByTitle(String query) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public List<Film> getTopFilms(Integer count, Integer genreId, Integer year) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
     public void checkFilmContains(Integer id) {
         if (!films.containsKey(id)) {
-            log.error(String.format("Фильм c id= %d не найден!", id));
-            throw new NotFoundException(
-                    String.format("Фильм c id= %d не найден!", id));
+            String message = String.format("Фильм c id= %d не найден!", id);
+            log.error(message);
+            throw new NotFoundException(message);
         }
     }
 }

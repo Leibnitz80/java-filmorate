@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,19 +31,20 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User addUser(User user) {
         user.setId(++currId);
-        users.put(user.getId(),user);
+        users.put(user.getId(), user);
         return user;
     }
 
     @Override
     public void updateUser(User user) {
         checkUserContains(user.getId());
-        users.put(user.getId(),user);
+        users.put(user.getId(), user);
     }
 
     @Override
     public void deleteUser(Long id) {
         checkUserContains(id);
+        deleteUserFromFriends(id);
         users.remove(id);
     }
 
@@ -58,14 +59,14 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteFriends(Long friendId, Long userId) {
         User user1 = getUserById(friendId);
-        User user2 = getUserById(friendId);
+        User user2 = getUserById(userId);
         user1.deleteFriend(user2);
         user2.deleteFriend(user1);
     }
 
     @Override
-    public List<User> getAllFriends(Long Id) {
-        return getUserById(Id).getFriends();
+    public List<User> getAllFriends(Long id) {
+        return getUserById(id).getFriends();
     }
 
     @Override
@@ -80,9 +81,32 @@ public class InMemoryUserStorage implements UserStorage {
     public void checkUserContains(Long id) {
         log.info("Валидация checkUserContains id={}", id);
         if (!users.containsKey(id)) {
-            log.error(String.format("Пользователь c id= %d не найден!", id));
-            throw new NotFoundException(
-                    String.format("Пользователь c id= %d не найден!", id));
+            String message = String.format("Пользователь c id= %d не найден!", id);
+            log.error(message);
+            throw new NotFoundException(message);
         }
+    }
+
+    // Удаление удаляемого user из друзей у других юзеров.
+    private void deleteUserFromFriends(Long id) {
+        User user1 = users.get(id);
+        List<User> friends = user1.getFriends();
+
+        friends.forEach(user2 -> user2.deleteFriend(user1));
+    }
+
+    @Override
+    public List getUserEvents(Long userId) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public void addUserEvent(Long userId, String eventType, String operation, Long entityId) {
+        throw new UnsupportedOperationException("method is not implement");
+    }
+
+    @Override
+    public void deleteUserEvents(Long userId) {
+        throw new UnsupportedOperationException("method is not implement");
     }
 }

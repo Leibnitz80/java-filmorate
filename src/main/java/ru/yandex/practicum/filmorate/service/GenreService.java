@@ -19,10 +19,14 @@ public class GenreService {
     }
 
     public List getAll() {
-        return genreStorage.getGenres();
+        List<Genre> genres = genreStorage.getGenres();
+        log.info("Запрос для Genre: GET getAll обработан успешно");
+        return genres;
     }
 
     public Genre getById(Integer id) {
-        return genreStorage.getGenreById(id);
+        Genre genre = genreStorage.getGenreById(id);
+        log.info("Запрос: GET genres getById {} обработан успешно", id);
+        return genre;
     }
 }

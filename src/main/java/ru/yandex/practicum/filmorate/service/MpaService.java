@@ -19,10 +19,14 @@ public class MpaService {
     }
 
     public List getAll() {
-        return mpaStorage.getMpas();
+        List<Mpa> mpas = mpaStorage.getMpas();
+        log.info("Запрос для Mpa: GET getAll обработан успешно");
+        return mpas;
     }
 
     public Mpa getById(Integer id) {
-        return mpaStorage.getMpaById(id);
+        Mpa mpa = mpaStorage.getMpaById(id);
+        log.info("Запрос для Mpa: GET getById {} обработан успешно", id);
+        return mpa;
     }
 }
