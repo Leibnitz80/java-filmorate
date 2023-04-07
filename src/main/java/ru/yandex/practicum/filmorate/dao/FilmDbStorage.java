@@ -41,30 +41,22 @@ public class FilmDbStorage implements FilmStorage {
                 "inner join Mpa r on r.mpa_id = f.mpa_id " +
                 "order by f.film_id ;";
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
-        sql = "select distinct gr.film_id, g.genre_id, g.name " +
-                "from Genres_Relation gr " +
-                "inner join Genres g on g.genre_id = gr.genre_id " +
-                "order by g.genre_id";
-        jdbcTemplate.query(sql, (rx, rowNum) -> parseGenres(rx, films));
+        fillGenresInFilms(films);
         getDirectorsIntoFilms(films);
         return films;
     }
 
-    private Genre parseGenres(ResultSet rs, List<Film> films) throws SQLException {
-        int filmId;
-        int genreId;
-        String name;
-        filmId = rs.getInt("film_id");
-        genreId = rs.getInt("genre_id");
-        name = rs.getString("name");
-        Genre genre = new Genre(genreId, name);
-        for (Film film : films) {
-            if (film.getId() == filmId) {
-                film.getGenres().add(genre);
-                break;
-            }
+    private void fillGenresInFilms(List<Film> films) {
+        if (films.isEmpty()) {
+            return;
         }
-        return genre;
+        Map<Integer, Film> filmsMap = new HashMap<>();
+        for (Film film : films) {
+            filmsMap.put(film.getId(), film);
+        }
+        if (!filmsMap.isEmpty()) {
+            films = getGenresByFilms(filmsMap);
+        }
     }
 
 
@@ -153,28 +145,23 @@ public class FilmDbStorage implements FilmStorage {
                         "group by f.film_id " +
                         "order by count(f.film_id) asc";
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId, friendId);
-
-        sql = "select distinct gr.film_id, g.genre_id, g.name " +
-                "from Genres_Relation gr " +
-                "inner join Genres g on g.genre_id = gr.genre_id " +
-                "order by g.genre_id";
-        jdbcTemplate.query(sql, (rx, rowNum) -> parseGenres(rx, films));
+        fillGenresInFilms(films);
         return films;
     }
 
     @Override
     public List<Film> getRecommendations(Long userId) {
         String sql = "SELECT lf.FILM_ID " +
-                     "from Likes lf " +
-                     "left join Likes lm on lm.FILM_ID = lf.FILM_ID AND lm.USER_ID = ? " +
-                     "WHERE lf.USER_ID IN (SELECT xf.USER_ID " +
-                                          "FROM Likes xm " +
-                                          "   INNER JOIN Likes xf ON xf.FILM_ID = xm.FILM_ID AND xf.USER_ID <> xm.USER_ID " +
-                                          "WHERE xm.USER_ID = ? " +
-                                          "GROUP BY xf.USER_ID " +
-                                          "ORDER BY count(xf.FILM_ID) desc " +
-                                          "LIMIT 1 ) " +
-                    "AND lm.FILM_ID IS NULL ";
+                "from Likes lf " +
+                "left join Likes lm on lm.FILM_ID = lf.FILM_ID AND lm.USER_ID = ? " +
+                "WHERE lf.USER_ID IN (SELECT xf.USER_ID " +
+                "FROM Likes xm " +
+                "   INNER JOIN Likes xf ON xf.FILM_ID = xm.FILM_ID AND xf.USER_ID <> xm.USER_ID " +
+                "WHERE xm.USER_ID = ? " +
+                "GROUP BY xf.USER_ID " +
+                "ORDER BY count(xf.FILM_ID) desc " +
+                "LIMIT 1 ) " +
+                "AND lm.FILM_ID IS NULL ";
         return jdbcTemplate.query(sql, (rs, rowNum) -> this.getFilmById(rs.getInt("film_id")), userId, userId);
     }
 
@@ -189,13 +176,7 @@ public class FilmDbStorage implements FilmStorage {
                 "order by count(l.user_id) desc, f.film_id";
 
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), query);
-
-        sql = "select distinct gr.film_id, g.genre_id, g.name " +
-                "from Genres_Relation gr " +
-                "inner join Genres g on g.genre_id = gr.genre_id " +
-                "order by g.genre_id";
-
-        jdbcTemplate.query(sql, (rx, rowNum) -> parseGenres(rx, films));
+        fillGenresInFilms(films);
         getDirectorsIntoFilms(films);
         return films;
     }
@@ -213,13 +194,7 @@ public class FilmDbStorage implements FilmStorage {
                 "order by count(l.user_id) desc, f.film_id";
 
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), query);
-
-        sql = "select distinct gr.film_id, g.genre_id, g.name " +
-                "from Genres_Relation gr " +
-                "inner join Genres g on g.genre_id = gr.genre_id " +
-                "order by g.genre_id";
-
-        jdbcTemplate.query(sql, (rx, rowNum) -> parseGenres(rx, films));
+        fillGenresInFilms(films);
         getDirectorsIntoFilms(films);
         return films;
     }
@@ -238,13 +213,7 @@ public class FilmDbStorage implements FilmStorage {
                 "order by count(l.user_id) desc, f.film_id";
 
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), query, query);
-
-        sql = "select distinct gr.film_id, g.genre_id, g.name " +
-                "from Genres_Relation gr " +
-                "inner join Genres g on g.genre_id = gr.genre_id " +
-                "order by g.genre_id";
-
-        jdbcTemplate.query(sql, (rx, rowNum) -> parseGenres(rx, films));
+        fillGenresInFilms(films);
         getDirectorsIntoFilms(films);
         return films;
     }
@@ -381,14 +350,10 @@ public class FilmDbStorage implements FilmStorage {
                     "where dr.director_id = ? " +
                     "group by f.film_id, f.name, f.description, f.releaseDate, f.duration, r.mpa_id, r.name, dr.director_id " +
                     "order by count(l.user_id)";
-                }
+        }
 
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), id);
-        sql = "select distinct gr.film_id, g.genre_id, g.name " +
-                "from Genres_Relation gr " +
-                "inner join Genres g on g.genre_id = gr.genre_id " +
-                "order by g.genre_id";
-        jdbcTemplate.query(sql, (rx, rowNum) -> parseGenres(rx, films));
+        fillGenresInFilms(films);
         getDirectorsIntoFilms(films);
         return films.stream().filter(p -> !p.getDirectors().isEmpty()).collect(Collectors.toList());
     }
@@ -475,32 +440,39 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void getDirectorsIntoFilms(List<Film> films) {
-        String sql = "select distinct dr.film_id, d.director_id, d.name " +
-                     "from directors_relation dr " +
-                     "inner join directors d on d.director_id = dr.director_id " +
-                     "order by d.director_id";
-        jdbcTemplate.query(sql, (rx, rowNum) -> parseDirectors(rx, films));
+        if (films.isEmpty()) {
+            return;
+        }
+        Map<Integer, Film> filmsMap = new HashMap<>();
+        for (Film film : films) {
+            filmsMap.put(film.getId(), film);
+        }
+        if (!filmsMap.isEmpty()) {
+            films = getDirectorsByFilms(filmsMap);
+        }
     }
 
-    private Director parseDirectors(ResultSet rs, List<Film> films) throws SQLException {
-        int filmId = rs.getInt("film_id");
-        int directorId = rs.getInt("director_id");
-        String name = rs.getString("name");
-        Director director = new Director(directorId, name);
-        for (Film film : films) {
-            if (film.getId() == filmId) {
-                film.getDirectors().add(director);
-                break;
-            }
-        }
-        return director;
+    private List<Film> getDirectorsByFilms(Map<Integer, Film> filmsMap) {
+        List<Integer> filmIds = new ArrayList<>(filmsMap.keySet());
+        String inSql = String.join(",", Collections.nCopies(filmIds.size(), "?"));
+
+        jdbcTemplate.query(
+                String.format("SELECT directors_relation.film_id,directors.director_id, directors.name " +
+                        "FROM directors_relation " +
+                        "JOIN directors ON  directors_relation.director_id = directors.director_id " +
+                        "WHERE directors_relation.film_id IN (%s)", inSql),
+                filmIds.toArray(),
+                (rs, rowNum) -> filmsMap.get(rs.getInt("film_id")).getDirectors()
+                        .add(new Director(rs.getInt("director_id"), rs.getString("name"))));
+
+        return new ArrayList<>(filmsMap.values());
     }
 
     private List<Director> getFilmDirectors(Integer filmId) {
         String sql = "select d.director_id, d.name from directors_relation dr " +
-                     "inner join directors d on d.director_id = dr.director_id " +
-                     "where film_id = ? " +
-                     "order by d.director_id ;";
+                "inner join directors d on d.director_id = dr.director_id " +
+                "where film_id = ? " +
+                "order by d.director_id ;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeDirector(rs), filmId);
     }
 
